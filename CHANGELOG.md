@@ -1,3 +1,16 @@
+## 0.0.5
+
+* Fixed real-app integration failure where Gradle could not resolve the
+  `com.google.devtools.ksp` plugin from the published package. The plugin's
+  Android module now applies KSP with an explicit `2.3.7` version.
+* Fixed host app compilation when extending `FlutterAppFunctionsApplication` by
+  exposing the AndroidX AppFunctions API artifacts transitively.
+* Added a Kotlin unit test that installs a coroutine test main dispatcher and
+  verifies `AppFunctionsBridge.executeAppFunction` dispatches to the Flutter
+  method channel successfully.
+* README: updated install/version text and clarified that host apps do not need
+  to declare KSP solely to consume `flutter_app_functions`.
+
 ## 0.0.4
 
 * Added `.github/workflows/publish.yml` — pushing a `vX.Y.Z` tag now auto-publishes the package to pub.dev via OpenID Connect (no `PUB_CREDENTIALS` secret is required). The workflow runs `flutter analyze` and `flutter test` before publishing; Kotlin tests are skipped because they need an Android SDK and the alpha08 KSP processor only completes inside a real build.

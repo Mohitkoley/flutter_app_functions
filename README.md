@@ -19,7 +19,7 @@ verbatim.
 | Android only | Minimum SDK 24, compile SDK 36 |
 | AndroidX `appfunctions` | `1.0.0-alpha08` |
 | Flutter | Flutter 3.x with Dart 3.12.0+ |
-| Version | [`0.0.3`](https://pub.dev/packages/flutter_app_functions) |
+| Version | [`0.0.5`](https://pub.dev/packages/flutter_app_functions) |
 
 ---
 
@@ -107,7 +107,7 @@ Add the package to your Flutter app from
 
 ```yaml
 dependencies:
-  flutter_app_functions: ^0.0.3
+  flutter_app_functions: ^0.0.5
 ```
 
 Then run:
@@ -129,6 +129,10 @@ The plugin's Android manifest already contributes the
 `<service>` declaration, and the `res/xml/app_metadata.xml` entry. The host
 app's manifest only needs to opt in (see
 [Wiring up the Android host app](#wiring-up-the-android-host-app)).
+
+The package applies the KSP Gradle plugin with an explicit version in its own
+Android module. Host apps do not need to declare `com.google.devtools.ksp`
+just to consume this plugin.
 
 ---
 

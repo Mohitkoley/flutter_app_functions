@@ -32,7 +32,7 @@ allprojects {
 
 plugins {
     id("com.android.library")
-    id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp") version "2.3.7"
 }
 
 android {
@@ -79,8 +79,9 @@ ksp {
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.3.20")
     testImplementation("org.mockito:mockito-core:5.0.0")
-    implementation("androidx.appfunctions:appfunctions:1.0.0-alpha08")
-    implementation("androidx.appfunctions:appfunctions-service:1.0.0-alpha08")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    api("androidx.appfunctions:appfunctions:1.0.0-alpha08")
+    api("androidx.appfunctions:appfunctions-service:1.0.0-alpha08")
     ksp("androidx.appfunctions:appfunctions-compiler:1.0.0-alpha08")
 
     if (flutterSdkPath != null) {
