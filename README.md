@@ -91,6 +91,10 @@ flutter run
 The example registers a `create_task` handler and displays a listener status
 screen while waiting for on-device App Function calls.
 
+## References
+
+- Original Android AppFunctions documentation: [Overview of AppFunctions](https://developer.android.com/ai/appfunctions)
+
 ## Testing
 
 Run package analysis and tests from the package root:
