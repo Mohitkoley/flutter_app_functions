@@ -1,5 +1,7 @@
 # flutter_app_functions
 
+[![pub package](https://img.shields.io/pub/v/flutter_app_functions.svg)](https://pub.dev/packages/flutter_app_functions)
+
 A Flutter plugin that mirrors the
 [Android App Functions](https://developer.android.com/ai/appfunctions) API.
 Register typed Dart functions once, and any on-device agent that talks to the
@@ -17,24 +19,25 @@ verbatim.
 | Android only | Minimum SDK 24, compile SDK 36 |
 | AndroidX `appfunctions` | `1.0.0-alpha08` |
 | Flutter | Flutter 3.x with Dart 3.12.0+ |
-| Version | `0.0.2` |
+| Version | [`0.0.2`](https://pub.dev/packages/flutter_app_functions) |
 
 ---
 
 ## Table of contents
 
 1. [Concepts](#concepts)
-2. [Installation](#installation)
-3. [Quick start](#quick-start)
-4. [Declaring an app function](#declaring-an-app-function)
+2. [How it works](#how-it-works)
+3. [Installation](#installation)
+4. [Quick start](#quick-start)
+5. [Declaring an app function](#declaring-an-app-function)
    * [Parameters](#parameters)
    * [Return types](#return-types)
-5. [Errors](#errors)
-6. [Wiring up the Android host app](#wiring-up-the-android-host-app)
-7. [Calling a function from an agent](#calling-a-function-from-an-agent)
-8. [Testing your app functions](#testing-your-app-functions)
-9. [Limitations](#limitations)
-10. [References](#references)
+6. [Errors](#errors)
+7. [Wiring up the Android host app](#wiring-up-the-android-host-app)
+8. [Calling a function from an agent](#calling-a-function-from-an-agent)
+9. [Testing your app functions](#testing-your-app-functions)
+10. [Limitations](#limitations)
+11. [References](#references)
 
 ---
 
@@ -60,13 +63,56 @@ adding or removing a function does not require a Gradle rebuild.
 
 ---
 
+## How it works
+
+A single `@AppFunction` entry point in Kotlin accepts every call from the
+agent, forwards it to the Dart registry over a `MethodChannel`, and returns
+the result. The Kotlin side never contains user logic — it is a fixed
+dispatcher. All parameters, return values, and errors flow over a JSON wire
+format (KSP forbids `AppFunctionData` as a parameter type on
+`@AppFunction`, so JSON strings are the only cross-language contract that
+works on `androidx.appfunctions:1.0.0-alpha08`):
+
+```
+Gemini agent
+    ↓ "call createTask(title='Buy milk')"
+Android AppFunctionManager
+    ↓ looks up @AppFunction executeAppFunction
+AppFunctionsBridge.executeAppFunction()           ← Kotlin (1 function, fixed)
+    ↓ MethodChannel.invokeMethod("invokeAppFunction", {functionId, parametersJson})
+FlutterAppFunctions._onMethodCall()                ← Dart
+    ↓ JSON-decode parameters, look up registry
+Your handler: (context, params) async { ... }       ← Dart (your logic)
+    ↓ returns String
+FlutterAppFunctions._encodeResultJson()
+    ↓ MethodChannel Result.success("...")
+AppFunctionsBridge.executeAppFunction() returns
+    ↓
+Android AppFunctionManager returns to agent
+```
+
+Because the handler is plain Dart, your UI state, your state-management
+objects, and your `ChangeNotifier`s / Riverpod providers / Bloc stores are
+all directly accessible — the agent can mutate the same state the user sees
+on screen, and the UI rebuilds through the normal `notifyListeners` /
+`setState` / `ref.invalidate` flow.
+
+---
+
 ## Installation
 
-Add the package to your Flutter app:
+Add the package to your Flutter app from
+[pub.dev/packages/flutter_app_functions](https://pub.dev/packages/flutter_app_functions):
 
 ```yaml
 dependencies:
   flutter_app_functions: ^0.0.2
+```
+
+Then run:
+
+```sh
+flutter pub get
 ```
 
 For local development, use a path dependency:
@@ -394,3 +440,5 @@ exercising the method channel from the host side.
 * [Overview of App Functions](https://developer.android.com/ai/appfunctions)
 * [`androidx.appfunctions` release notes](https://developer.android.com/jetpack/androidx/releases/appfunctions)
 * [App Functions sample app](https://github.com/android/appfunctions-sample)
+* [flutter_app_functions on pub.dev](https://pub.dev/packages/flutter_app_functions)
+* [flutter_app_functions on GitHub](https://github.com/Mohitkoley/flutter_app_functions)
