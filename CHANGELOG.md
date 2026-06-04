@@ -1,3 +1,8 @@
+## 0.0.4
+
+* Added `.github/workflows/publish.yml` — pushing a `vX.Y.Z` tag now auto-publishes the package to pub.dev via OpenID Connect (no `PUB_CREDENTIALS` secret is required). The workflow runs `flutter analyze` and `flutter test` before publishing; Kotlin tests are skipped because they need an Android SDK and the alpha08 KSP processor only completes inside a real build.
+* README: added a maintainer-only "Publishing releases" section that documents the one-time pub.dev OIDC setup, the version-bump-and-tag flow, and how to re-publish by deleting and re-pushing the tag. The pub.dev form's tag pattern uses `{{version}}` substitution (not a regex), so the form field is `v{{version}}` — the matching GitHub-side regex in the workflow's `on.push.tags` is independent.
+
 ## 0.0.3
 
 * Added `AppFunctionPlatformNotSupportedException` (extends `UnsupportedError`). The plugin now fails fast on iOS, macOS, Linux, Windows, and Web before any native code is touched.
