@@ -1,3 +1,12 @@
+## 0.0.6
+
+* README: removed hard-coded package version snippets and switched install
+  instructions to `flutter pub add flutter_app_functions`, so future releases
+  do not leave stale README version text behind.
+* README: clarified that each host app must create its own Android
+  `MyApplication` class extending `FlutterAppFunctionsApplication` and point
+  `<application android:name>` at it.
+
 ## 0.0.5
 
 * Fixed real-app integration failure where Gradle could not resolve the

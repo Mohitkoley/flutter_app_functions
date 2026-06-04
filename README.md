@@ -19,7 +19,7 @@ verbatim.
 | Android only | Minimum SDK 24, compile SDK 36 |
 | AndroidX `appfunctions` | `1.0.0-alpha08` |
 | Flutter | Flutter 3.x with Dart 3.12.0+ |
-| Version | [`0.0.5`](https://pub.dev/packages/flutter_app_functions) |
+| Latest release | See the pub.dev badge above |
 
 ---
 
@@ -105,15 +105,8 @@ on screen, and the UI rebuilds through the normal `notifyListeners` /
 Add the package to your Flutter app from
 [pub.dev/packages/flutter_app_functions](https://pub.dev/packages/flutter_app_functions):
 
-```yaml
-dependencies:
-  flutter_app_functions: ^0.0.5
-```
-
-Then run:
-
 ```sh
-flutter pub get
+flutter pub add flutter_app_functions
 ```
 
 For local development, use a path dependency:
@@ -183,7 +176,8 @@ In `android/app/src/main/AndroidManifest.xml`:
 </manifest>
 ```
 
-In `android/app/src/main/kotlin/.../MyApplication.kt`:
+Create an app-specific `Application` class in your Android app. For example,
+in `android/app/src/main/kotlin/com/example/myapp/MyApplication.kt`:
 
 ```kotlin
 package com.example.myapp
@@ -192,6 +186,11 @@ import com.mohitkoley.flutter_app_functions.FlutterAppFunctionsApplication
 
 class MyApplication : FlutterAppFunctionsApplication()
 ```
+
+Use your app's real Kotlin package name and keep this file in your app module.
+This class is required: the plugin cannot register App Functions with Android
+unless the host app points its `<application android:name>` at an
+`Application` class that extends `FlutterAppFunctionsApplication`.
 
 In `android/app/src/main/res/values/strings.xml`:
 
@@ -337,16 +336,22 @@ The plugin takes care of every manifest entry *inside* the
    in your `res/values/strings.xml` (the plugin ships sensible defaults
    so step 4 is optional).
 
-Then point your custom `Application` class at
-`FlutterAppFunctionsApplication`:
+Create your own app-level `Application` class and point it at
+`FlutterAppFunctionsApplication`. Do this in the host app's Android source set,
+not inside the plugin package:
 
 ```kotlin
+package com.example.myapp
+
+import com.mohitkoley.flutter_app_functions.FlutterAppFunctionsApplication
+
 class MyApplication : FlutterAppFunctionsApplication()
 ```
 
-That's the only Kotlin code you need to write. `FlutterAppFunctionsApplication`
-implements `AppFunctionConfiguration.Provider` and registers the
-`AppFunctionsBridge` with the AppFunctions runtime.
+Then set `android:name=".MyApplication"` on the host app's `<application>`
+element. This Kotlin class is required because
+`FlutterAppFunctionsApplication` implements `AppFunctionConfiguration.Provider`
+and registers the `AppFunctionsBridge` with the AppFunctions runtime.
 
 ### Gradle
 
@@ -468,8 +473,8 @@ official guide is at
 3. Click **Enable publishing from GitHub Actions** and fill in:
    * **Tag pattern**: `v{{version}}`
      (the form's `{{version}}` placeholder is substituted with the
-     package's version, so this accepts tags like `v0.0.3`,
-     `v1.2.3`, and `v0.0.4-rc.1`)
+     package's version, so it accepts tags like `v1.2.3` and
+     `v1.2.3-rc.1`)
 4. Tick the form's checkboxes as follows:
    * **Enable publishing from push events** — ✅ on
      *(required; this workflow is triggered by `push: tags:`)*
@@ -501,12 +506,13 @@ $EDITOR CHANGELOG.md   # add a new entry on top
 
 # 2. Commit and push to main
 git add pubspec.yaml CHANGELOG.md
-git commit -m "Release 0.0.4"
+VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+git commit -m "Release ${VERSION}"
 git push origin main
 
 # 3. Tag and push the tag — this triggers the workflow
-git tag v0.0.4
-git push origin v0.0.4
+git tag "v${VERSION}"
+git push origin "v${VERSION}"
 ```
 
 The GitHub Actions run takes ~30 seconds, after which pub.dev lists the
@@ -518,12 +524,13 @@ rejects branch-typed refs.
 
 ```sh
 # Delete the tag locally and remotely
-git tag -d v0.0.4
-git push origin :refs/tags/v0.0.4
+VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+git tag -d "v${VERSION}"
+git push origin ":refs/tags/v${VERSION}"
 
 # Fix the issue, then re-tag
-git tag v0.0.4
-git push origin v0.0.4
+git tag "v${VERSION}"
+git push origin "v${VERSION}"
 ```
 
 ---
