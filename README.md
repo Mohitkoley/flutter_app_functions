@@ -202,7 +202,7 @@ In `android/app/src/main/res/values/strings.xml`:
 ```
 
 Build, install, and the function shows up in
-`adb shell cmd appfunctions list-app-functions`.
+`adb shell cmd app_function list-app-functions`.
 
 ---
 
@@ -377,11 +377,11 @@ Dart round-trip. Once your app is installed:
 
 ```sh
 # List every function the bridge exposes:
-adb shell cmd appfunctions list-app-functions
+adb shell cmd app_function list-app-functions
 
 # Invoke a function by id:
-adb shell cmd appfunctions execute-app-function \
-    --uri appfunctions://com.mohitkoley.flutter_app_functions/executeAppFunction \
+adb shell cmd app_function execute-app-function \
+    --uri app_function://com.mohitkoley.flutter_app_functions/executeAppFunction \
     --function-id createTask \
     --params '{"title":"Buy milk","notes":"2L semi-skimmed"}'
 ```
