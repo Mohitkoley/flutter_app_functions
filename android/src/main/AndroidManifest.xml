@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <service
+            android:name="androidx.appfunctions.internal.AppFunctionTileService"
+            android:permission="android.permission.BIND_APP_FUNCTION_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.appfunctions.action.APP_FUNCTION_SERVICE" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

@@ -1,0 +1,89 @@
+import java.util.Properties
+
+group = "com.mohitkoley.flutter_app_functions"
+version = "1.0-SNAPSHOT"
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+val flutterSdkPath: String? = localProperties.getProperty("flutter.sdk")
+
+buildscript {
+    val kotlinVersion = "2.3.20"
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:9.0.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id("com.android.library")
+    id("com.google.devtools.ksp")
+}
+
+android {
+    namespace = "com.mohitkoley.flutter_app_functions"
+
+    compileSdk = 36
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    defaultConfig {
+        minSdk = 24
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                it.useJUnitPlatform()
+
+                it.outputs.upToDateWhen { false }
+
+                it.testLogging {
+                    events("passed", "skipped", "failed", "standardOut", "standardError")
+                    showStandardStreams = true
+                }
+            }
+        }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+
+dependencies {
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.3.20")
+    testImplementation("org.mockito:mockito-core:5.0.0")
+    implementation("androidx.appfunctions:appfunctions:1.0.0-alpha08")
+    implementation("androidx.appfunctions:appfunctions-service:1.0.0-alpha08")
+    ksp("androidx.appfunctions:appfunctions-compiler:1.0.0-alpha08")
+
+    if (flutterSdkPath != null) {
+        compileOnly(files("$flutterSdkPath/bin/cache/artifacts/engine/android-x64/flutter.jar"))
+        testImplementation(files("$flutterSdkPath/bin/cache/artifacts/engine/android-x64/flutter.jar"))
+    }
+
+    // Coroutines dependency for UI thread switching
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+}
