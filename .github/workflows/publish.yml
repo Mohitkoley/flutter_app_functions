@@ -7,10 +7,11 @@ name: Publish to pub.dev
 #   1. Sign in to pub.dev with the account that owns the package.
 #   2. Visit https://pub.dev/packages/flutter_app_functions/admin/automated-publishing
 #      (or the package's admin → "Automated publishing" tab).
-#   3. Click "Enable publishing from GitHub Actions", set:
-#        Repository: Mohitkoley/flutter_app_functions
-#        Tag pattern: v[0-9]+.[0-9]+.[0-9]+
-#        Workflow file: publish.yml
+#   3. Click "Enable publishing from GitHub Actions", set the tag
+#      pattern to "v{{version}}" (the form's {{version}} placeholder
+#      expands to the package's version, e.g. 0.0.3, 1.2.3-rc.1).
+#      Tick "Enable publishing from push events" — leave the other
+#      two checkboxes (workflow_dispatch, require environment) off.
 #   4. Save. pub.dev will trust OIDC tokens from the next matching job.
 #
 # Then cut a release by bumping pubspec.yaml, updating CHANGELOG.md, and

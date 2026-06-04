@@ -462,10 +462,26 @@ official guide is at
 2. Open the package's admin page:
    [`pub.dev/packages/flutter_app_functions/admin/automated-publishing`](https://pub.dev/packages/flutter_app_functions/admin/automated-publishing).
 3. Click **Enable publishing from GitHub Actions** and fill in:
-   * **Repository**: `Mohitkoley/flutter_app_functions`
-   * **Tag pattern**: `v[0-9]+.[0-9]+.[0-9]+`
-   * **Workflow file**: `publish.yml`
-4. Save. The next job triggered by a matching tag will be trusted.
+   * **Tag pattern**: `v{{version}}`
+     (the form's `{{version}}` placeholder is substituted with the
+     package's version, so this accepts tags like `v0.0.3`,
+     `v1.2.3`, and `v0.0.4-rc.1`)
+4. Tick the form's checkboxes as follows:
+   * **Enable publishing from push events** — ✅ on
+     *(required; this workflow is triggered by `push: tags:`)*
+   * **Enable publishing from workflow_dispatch events** — ❌ off
+     *(pub.dev's OIDC check rejects branch-typed refs, so a manually
+     triggered run would always fail with a confusing server error)*
+   * **Require GitHub Actions environment** — ❌ off
+     *(only relevant if you use GitHub Environments for approval gates
+     or env-scoped secrets; unnecessary for solo publishing)*
+5. Save. The next job triggered by a matching tag will be trusted.
+
+> **Two patterns, two syntaxes.** This README's
+> [`publish.yml`](.github/workflows/publish.yml) uses a GitHub regex
+> (`'v[0-9]+.[0-9]+.[0-9]+*'`) to decide *when* the job fires; the
+> pub.dev form's `v{{version}}` decides *which tags it will trust*.
+> Both must be satisfied for a tag to result in a publish.
 
 > **Why no `PUB_CREDENTIALS` secret?** OIDC exchanges a short-lived
 > GitHub-issued token for a pub.dev OAuth token at runtime, so the
