@@ -1,0 +1,76 @@
+name: Publish to pub.dev
+
+# This workflow uses OpenID Connect (OIDC) — no long-lived secret in the repo.
+# See https://dart.dev/tools/pub/automated-publishing for the official guide.
+#
+# One-time setup (see README → "Continuous integration"):
+#   1. Sign in to pub.dev with the account that owns the package.
+#   2. Visit https://pub.dev/packages/flutter_app_functions/admin/automated-publishing
+#      (or the package's admin → "Automated publishing" tab).
+#   3. Click "Enable publishing from GitHub Actions", set:
+#        Repository: Mohitkoley/flutter_app_functions
+#        Tag pattern: v[0-9]+.[0-9]+.[0-9]+
+#        Workflow file: publish.yml
+#   4. Save. pub.dev will trust OIDC tokens from the next matching job.
+#
+# Then cut a release by bumping pubspec.yaml, updating CHANGELOG.md, and
+# pushing a `vX.Y.Z` tag — GitHub Actions publishes within ~30 seconds.
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+# `workflow_dispatch` is intentionally omitted: pub.dev OIDC requires a
+# tag-pushed ref, and branch/manual triggers are rejected at the server
+# with "Automated publishing is only allowed from a 'tag' refType".
+# Re-publish by deleting the tag and re-pushing, or by pushing a new tag.
+
+permissions:
+  contents: read  # checkout only — no need to write to the repo
+
+jobs:
+  publish:
+    name: Publish to pub.dev
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # required for OIDC authentication to pub.dev
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter (stable)
+        uses: flutter-actions/setup-flutter@v4
+        with:
+          channel: stable
+          cache: true
+
+      # Exchanges the GitHub OIDC token for a short-lived pub.dev OAuth
+      # token and writes it to $PUB_CACHE/credentials.json. No secret
+      # is ever written to the repo or to workflow logs.
+      - name: Setup pub.dev credentials (OIDC)
+        uses: flutter-actions/setup-pubdev-credentials@v1
+
+      - name: Show publishing target
+        run: |
+          echo "Publishing ${{ github.repository }}@${{ github.ref_name }} to pub.dev"
+          head -1 pubspec.yaml
+          grep -E '^(version|name):' pubspec.yaml
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      # Dart unit tests only. The Kotlin/Gradle test suite needs the
+      # Android SDK (and would block on a 1 GB+ SDK download + first-run
+      # Gradle warm-up) — it is exercised locally before tagging.
+      - name: Test (Dart)
+        run: flutter test
+
+      - name: Publish to pub.dev
+        # `--force` skips the interactive confirmation prompt that
+        # `flutter pub publish` would otherwise hang on in CI.
+        run: flutter pub publish --force

@@ -37,7 +37,8 @@ verbatim.
 8. [Calling a function from an agent](#calling-a-function-from-an-agent)
 9. [Testing your app functions](#testing-your-app-functions)
 10. [Limitations](#limitations)
-11. [References](#references)
+11. [Publishing releases](#publishing-releases) *(maintainers)*
+12. [References](#references)
 
 ---
 
@@ -442,6 +443,68 @@ exercising the method channel from the host side.
   the Dart surface ergonomic.
 * Boolean and double are exposed as `boolean` / `double` in the return
   type, matching the official App Functions API.
+
+---
+
+## Publishing releases
+
+*Maintainer-only — skip if you are consuming the package.*
+
+Publishing is automated by
+[`.github/workflows/publish.yml`](.github/workflows/publish.yml) using
+**OpenID Connect** — no long-lived secret is stored in the repo. The
+official guide is at
+[dart.dev/tools/pub/automated-publishing](https://dart.dev/tools/pub/automated-publishing).
+
+### One-time setup (do this once on pub.dev)
+
+1. Sign in to pub.dev with the Google account that owns the package.
+2. Open the package's admin page:
+   [`pub.dev/packages/flutter_app_functions/admin/automated-publishing`](https://pub.dev/packages/flutter_app_functions/admin/automated-publishing).
+3. Click **Enable publishing from GitHub Actions** and fill in:
+   * **Repository**: `Mohitkoley/flutter_app_functions`
+   * **Tag pattern**: `v[0-9]+.[0-9]+.[0-9]+`
+   * **Workflow file**: `publish.yml`
+4. Save. The next job triggered by a matching tag will be trusted.
+
+> **Why no `PUB_CREDENTIALS` secret?** OIDC exchanges a short-lived
+> GitHub-issued token for a pub.dev OAuth token at runtime, so the
+> repo never has to hold a credential that could leak. See the
+> [GitHub Actions OIDC docs](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect).
+
+### Cutting a release
+
+```sh
+# 1. Bump the version and update the changelog
+$EDITOR pubspec.yaml   # bump `version:`
+$EDITOR CHANGELOG.md   # add a new entry on top
+
+# 2. Commit and push to main
+git add pubspec.yaml CHANGELOG.md
+git commit -m "Release 0.0.4"
+git push origin main
+
+# 3. Tag and push the tag — this triggers the workflow
+git tag v0.0.4
+git push origin v0.0.4
+```
+
+The GitHub Actions run takes ~30 seconds, after which pub.dev lists the
+new version. Re-publish by deleting and re-pushing the tag — there is
+**no** `workflow_dispatch` trigger, because pub.dev's OIDC check
+rejects branch-typed refs.
+
+### Re-running a failed publish
+
+```sh
+# Delete the tag locally and remotely
+git tag -d v0.0.4
+git push origin :refs/tags/v0.0.4
+
+# Fix the issue, then re-tag
+git tag v0.0.4
+git push origin v0.0.4
+```
 
 ---
 
