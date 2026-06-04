@@ -19,7 +19,7 @@ verbatim.
 | Android only | Minimum SDK 24, compile SDK 36 |
 | AndroidX `appfunctions` | `1.0.0-alpha08` |
 | Flutter | Flutter 3.x with Dart 3.12.0+ |
-| Version | [`0.0.2`](https://pub.dev/packages/flutter_app_functions) |
+| Version | [`0.0.3`](https://pub.dev/packages/flutter_app_functions) |
 
 ---
 
@@ -106,7 +106,7 @@ Add the package to your Flutter app from
 
 ```yaml
 dependencies:
-  flutter_app_functions: ^0.0.2
+  flutter_app_functions: ^0.0.3
 ```
 
 Then run:
@@ -299,6 +299,7 @@ The Dart exception hierarchy maps 1:1 to `androidx.appfunctions`:
 | `AppFunctionPermissionRequiredException` | `AppFunctionPermissionRequiredException` | `AppFunctionPermissionRequired` |
 | `AppFunctionDisabledException` | `AppFunctionDisabledException` | `AppFunctionDisabled` |
 | `AppFunctionAppUnknownException` | `AppFunctionAppUnknownException` | `AppFunctionAppUnknown` |
+| `AppFunctionPlatformNotSupportedException` *(extends `UnsupportedError`)* | n/a — fired on iOS/macOS/Linux/Windows/Web before native code is touched | n/a |
 
 Throw any of these from your handler and the agent sees the matching typed
 exception on the Kotlin side:
@@ -423,7 +424,16 @@ exercising the method channel from the host side.
 
 ## Limitations
 
-* Android only.
+* **Android only.** `androidx.appfunctions` has no iOS, macOS, Linux,
+  Windows, or Web counterpart. `FlutterAppFunctions.register`,
+  `registerAll`, `invoke`, and `getPlatformVersion` throw
+  `AppFunctionPlatformNotSupportedException` on any non-Android
+  `defaultTargetPlatform` before the registry is mutated or any method
+  channel traffic is generated. The exception's `platform` field
+  reports the offending runtime (e.g. `"iOS"`). If you want to share
+  your function definitions between an Android build and an iOS / Web
+  build of the same codebase, gate the `register` call on
+  `defaultTargetPlatform == TargetPlatform.android`.
 * The plugin targets `androidx.appfunctions:1.0.0-alpha08`, which is an
   alpha release of the AppFunctions library.
 * Nested object and array-of-object parameters are not supported — only

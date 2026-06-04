@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_app_functions/flutter_app_functions.dart';
 import 'package:flutter_app_functions/flutter_app_functions_method_channel.dart';
@@ -22,6 +23,7 @@ void main() {
   });
 
   tearDown(() {
+    debugDefaultTargetPlatformOverride = null;
     FlutterAppFunctions.instance.unregisterAll();
   });
 
@@ -244,6 +246,94 @@ void main() {
       expect(FlutterAppFunctions.instance.length, 1);
       FlutterAppFunctions.instance.unregister('a');
       expect(FlutterAppFunctions.instance.length, 0);
+    });
+  });
+
+  group('platform support', () {
+    test(
+        'register throws AppFunctionPlatformNotSupportedException on iOS '
+        'and leaves the registry empty', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      expect(
+        () => FlutterAppFunctions.instance.register(
+          AppFunctionDefinition(
+            id: 'a',
+            description: 'A',
+            returnType: AppFunctionReturnType.voidType,
+            handler: (_, _) async {},
+          ),
+        ),
+        throwsA(
+          isA<AppFunctionPlatformNotSupportedException>()
+              .having((e) => e.platform, 'platform', 'iOS')
+              .having(
+                (e) => e.message,
+                'message',
+                contains('flutter_app_functions is Android-only'),
+              ),
+        ),
+      );
+      expect(FlutterAppFunctions.instance.length, 0);
+    });
+
+    test(
+        'invoke throws on iOS even when a function with the given id was '
+        'previously registered on Android', () async {
+      FlutterAppFunctions.instance.register(
+        AppFunctionDefinition(
+          id: 'a',
+          description: 'A',
+          returnType: AppFunctionReturnType.voidType,
+          handler: (_, _) async {},
+        ),
+      );
+      expect(FlutterAppFunctions.instance.length, 1);
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      await expectLater(
+        () => FlutterAppFunctions.instance.invoke('a'),
+        throwsA(isA<AppFunctionPlatformNotSupportedException>()),
+      );
+    });
+
+    test('getPlatformVersion throws on iOS', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      await expectLater(
+        () => FlutterAppFunctions.instance.getPlatformVersion(),
+        throwsA(
+          isA<AppFunctionPlatformNotSupportedException>()
+              .having((e) => e.platform, 'platform', 'iOS'),
+        ),
+      );
+    });
+
+    test(
+        'local-only operations (unregister, unregisterAll, ensureInitialized) '
+        'are no-ops on non-Android platforms', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      expect(() => FlutterAppFunctions.instance.unregister('anything'),
+          returnsNormally);
+      expect(() => FlutterAppFunctions.instance.unregisterAll(),
+          returnsNormally);
+      expect(() => FlutterAppFunctions.instance.ensureInitialized(),
+          returnsNormally);
+    });
+
+    test('registerAll propagates the platform error from the first call', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      expect(
+        () => FlutterAppFunctions.instance.registerAll([
+          AppFunctionDefinition(
+            id: 'a',
+            description: 'A',
+            returnType: AppFunctionReturnType.voidType,
+            handler: (_, _) async {},
+          ),
+        ]),
+        throwsA(
+          isA<AppFunctionPlatformNotSupportedException>()
+              .having((e) => e.platform, 'platform', 'macOS'),
+        ),
+      );
     });
   });
 }

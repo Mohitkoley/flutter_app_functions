@@ -116,3 +116,30 @@ class AppFunctionAppUnknownException extends AppFunctionException {
   String toString() =>
       cause == null ? super.toString() : '$code: $message (caused by: $cause)';
 }
+
+/// Thrown when the plugin is used on a platform other than Android.
+///
+/// The plugin mirrors `androidx.appfunctions`, which is an Android-only
+/// library — iOS, macOS, Linux, Windows, and Web have no equivalent
+/// runtime, so any call that would touch the native bridge fails fast
+/// with this error before the registry is mutated or any method channel
+/// traffic is generated.
+///
+/// Extends [UnsupportedError] rather than [AppFunctionException] because
+/// it has no analogue in the `androidx.appfunctions` exception hierarchy.
+class AppFunctionPlatformNotSupportedException extends UnsupportedError {
+  /// The runtime platform the plugin was used on, as reported by
+  /// `defaultTargetPlatform.name` (e.g. `"iOS"`, `"macOS"`).
+  final String platform;
+
+  AppFunctionPlatformNotSupportedException(this.platform)
+      : super(
+          'flutter_app_functions is Android-only. '
+          'The current platform is "$platform", which has no '
+          'androidx.appfunctions equivalent. '
+          'See https://developer.android.com/ai/appfunctions',
+        );
+
+  @override
+  String toString() => 'AppFunctionPlatformNotSupportedException: $message';
+}

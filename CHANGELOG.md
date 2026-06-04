@@ -1,3 +1,10 @@
+## 0.0.3
+
+* Added `AppFunctionPlatformNotSupportedException` (extends `UnsupportedError`). The plugin now fails fast on iOS, macOS, Linux, Windows, and Web before any native code is touched.
+* `FlutterAppFunctions.register`, `registerAll`, `invoke`, and `getPlatformVersion` now throw `AppFunctionPlatformNotSupportedException` when `defaultTargetPlatform != android`. Local-only operations (`unregister`, `unregisterAll`, `ensureInitialized`, registry getters) remain no-ops on any platform.
+* The exception's `platform` field carries the offending platform name (e.g. `"iOS"`); the message links to `developer.android.com/ai/appfunctions`.
+* README: added the new exception to the Errors table and made the "Android only" limitation explicit.
+
 ## 0.0.2
 
 * Rewrote the plugin as a faithful wrapper of the [Android App Functions](https://developer.android.com/ai/appfunctions) API.

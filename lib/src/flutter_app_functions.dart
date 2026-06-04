@@ -18,6 +18,18 @@ const String kAppFunctionsChannelName = 'flutter_app_functions_channel';
 /// function. Arguments: `{"functionId": String, "parametersJson": String}`.
 const String _kMethodInvokeAppFunction = 'invokeAppFunction';
 
+/// Fails fast with [AppFunctionPlatformNotSupportedException] when the
+/// plugin is used on a platform other than Android. Local-only
+/// operations (registry CRUD, channel handler installation) do not call
+/// this; any public API that could touch native code does.
+void _assertAndroid() {
+  if (defaultTargetPlatform != TargetPlatform.android) {
+    throw AppFunctionPlatformNotSupportedException(
+      defaultTargetPlatform.name,
+    );
+  }
+}
+
 /// Public entry point of the Flutter App Functions plugin.
 ///
 /// Mirrors the surface of `androidx.appfunctions` for Flutter apps:
@@ -84,10 +96,14 @@ class FlutterAppFunctions {
   /// Registers a single [definition]. If a definition with the same
   /// [AppFunctionDefinition.id] already exists it is replaced.
   ///
+  /// Throws [AppFunctionPlatformNotSupportedException] on non-Android
+  /// platforms.
+  ///
   /// This method also implicitly calls [ensureInitialized] so that
   /// method-channel invocations from Kotlin are routed here as soon as
   /// possible after [runApp].
   void register(AppFunctionDefinition definition) {
+    _assertAndroid();
     ensureInitialized();
     _registry.register(definition);
   }
@@ -116,6 +132,10 @@ class FlutterAppFunctions {
   /// it directly. It is exposed for advanced setups where the host wants
   /// to wire the channel before any definition is registered (for
   /// example, to surface registration calls back from native code).
+  ///
+  /// This is a local-only operation and does not throw on non-Android
+  /// platforms; the [register] / [invoke] / [getPlatformVersion] entry
+  /// points are the ones that fail fast.
   void ensureInitialized() {
     if (_handlerInstalled) return;
     _handlerInstalled = true;
@@ -130,7 +150,11 @@ class FlutterAppFunctions {
 
   /// Asks the platform for the Android version string. Kept for
   /// backwards-compat with the previous `getPlatformVersion` API.
+  ///
+  /// Throws [AppFunctionPlatformNotSupportedException] on non-Android
+  /// platforms.
   Future<String?> getPlatformVersion() {
+    _assertAndroid();
     return FlutterAppFunctionsPlatform.instance.getPlatformVersion();
   }
 
@@ -139,10 +163,14 @@ class FlutterAppFunctions {
   /// other Dart code. Typed [AppFunctionException]s thrown by the handler
   /// propagate to the caller unchanged; the [PlatformException] wrapping
   /// only happens on the MethodChannel path.
+  ///
+  /// Throws [AppFunctionPlatformNotSupportedException] on non-Android
+  /// platforms before the registry is consulted.
   Future<dynamic> invoke(
     String id, [
     Map<String, dynamic> parameters = const <String, dynamic>{},
   ]) async {
+    _assertAndroid();
     try {
       return await _invokeInProcess(id, parameters);
     } on AppFunctionException {
