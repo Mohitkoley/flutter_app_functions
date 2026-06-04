@@ -1,3 +1,14 @@
+## 0.0.7
+
+* Example: replaced the toy sample with a realistic productivity app that
+  exposes AppFunctions as on-device MCP-style tools (`createTask`,
+  `addItemsToShoppingList`, `completeTask`, and `summarizeToday`).
+* Example: added a local AI caller simulation that turns prompts into function
+  ids and JSON parameters, then invokes the same Dart handlers that Android
+  AppFunctions callers use through the bridge.
+* Example README: documented that real apps expose local AppFunctions to Android
+  and do not connect directly to Gemini just to make tools discoverable.
+
 ## 0.0.6
 
 * README: removed hard-coded package version snippets and switched install

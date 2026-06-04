@@ -204,6 +204,11 @@ In `android/app/src/main/res/values/strings.xml`:
 Build, install, and the function shows up in
 `adb shell cmd app_function list-app-functions`.
 
+For a more realistic flow, see [`example/lib/main.dart`](example/lib/main.dart).
+It registers multiple productivity functions, mutates normal Flutter app state,
+and includes a local AI caller simulation that sends the same function id and
+JSON parameter shape that an Android AppFunctions caller would send.
+
 ---
 
 ## Declaring an app function

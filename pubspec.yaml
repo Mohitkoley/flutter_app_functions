@@ -1,6 +1,6 @@
 name: flutter_app_functions
 description: "Flutter bridge for Android App Functions. Register typed Dart functions that Android agents such as Gemini can discover and invoke on-device."
-version: 0.0.6
+version: 0.0.7
 repository: https://github.com/mohitkoley/flutter_app_functions
 issue_tracker: https://github.com/mohitkoley/flutter_app_functions/issues
 topics:
