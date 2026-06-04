@@ -1,8 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions">
+
     <application
         android:label="flutter_app_functions_example"
-        android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:name=".MyApplication"
+        android:icon="@mipmap/ic_launcher"
+        appfn:description="@string/appfn_description"
+        appfn:displayDescription="@string/appfn_display_description">
         <activity
             android:name=".MainActivity"
             android:exported="true"

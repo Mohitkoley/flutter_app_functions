@@ -2,18 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'flutter_app_functions_platform_interface.dart';
+import 'src/flutter_app_functions.dart' show kAppFunctionsChannelName;
 
-/// An implementation of [FlutterAppFunctionsPlatform] that uses method channels.
+/// The [MethodChannel]-backed implementation of
+/// [FlutterAppFunctionsPlatform].
 class MethodChannelFlutterAppFunctions extends FlutterAppFunctionsPlatform {
-  /// The method channel used to interact with the native platform.
+  /// The [MethodChannel] used to communicate with the native side.
   @visibleForTesting
-  final methodChannel = const MethodChannel('flutter_app_functions_channel');
+  final MethodChannel methodChannel =
+      const MethodChannel(kAppFunctionsChannelName);
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>(
-      'getPlatformVersion',
-    );
-    return version;
+    return methodChannel.invokeMethod<String>('getPlatformVersion');
   }
 }

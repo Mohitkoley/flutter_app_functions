@@ -1,4 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions">
+
     <application>
         <service
             android:name="androidx.appfunctions.internal.AppFunctionTileService"
@@ -8,5 +10,9 @@
                 <action android:name="androidx.appfunctions.action.APP_FUNCTION_SERVICE" />
             </intent-filter>
         </service>
+
+        <property
+            android:name="android.app.appfunctions.app_metadata"
+            android:resource="@xml/app_metadata" />
     </application>
 </manifest>

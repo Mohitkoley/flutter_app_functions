@@ -1,0 +1,5 @@
+package com.mohitkoley.flutter_app_functions_example
+
+import com.mohitkoley.flutter_app_functions.FlutterAppFunctionsApplication
+
+class MyApplication : FlutterAppFunctionsApplication()

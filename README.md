@@ -1,112 +1,396 @@
 # flutter_app_functions
 
-Flutter plugin for exposing Android App Functions that can call back into Dart
-tool handlers through a method channel.
+A Flutter plugin that mirrors the
+[Android App Functions](https://developer.android.com/ai/appfunctions) API.
+Register typed Dart functions once, and any on-device agent that talks to the
+Android App Functions runtime (Gemini and friends) can discover, parameterise,
+invoke, and react to typed errors from those functions — all without leaving
+your existing Flutter app.
 
-The Android side registers an App Function named `executeDartTool`. When the
-function is invoked on-device, the plugin forwards the requested tool name and
-JSON parameters to Dart. Your app registers one Dart handler and returns a
-string result.
+The plugin speaks the same wire protocol, the same `AppFunction*Exception`
+types, and the same manifest shape as the official Android library, so the
+documentation at `developer.android.com/ai/appfunctions` applies almost
+verbatim.
 
-## Platform support
+| | |
+| --- | --- |
+| Android only | Minimum SDK 24, compile SDK 36 |
+| AndroidX `appfunctions` | `1.0.0-alpha08` |
+| Flutter | Flutter 3.x with Dart 3.12.0+ |
+| Version | `0.0.2` |
 
-- Android only
-- Minimum Android SDK: 24
-- Android compile SDK: 36
-- AndroidX AppFunctions: 1.0.0-alpha08
-- Flutter SDK with Dart 3.12.0 or newer
+---
+
+## Table of contents
+
+1. [Concepts](#concepts)
+2. [Installation](#installation)
+3. [Quick start](#quick-start)
+4. [Declaring an app function](#declaring-an-app-function)
+   * [Parameters](#parameters)
+   * [Return types](#return-types)
+5. [Errors](#errors)
+6. [Wiring up the Android host app](#wiring-up-the-android-host-app)
+7. [Calling a function from an agent](#calling-a-function-from-an-agent)
+8. [Testing your app functions](#testing-your-app-functions)
+9. [Limitations](#limitations)
+10. [References](#references)
+
+---
+
+## Concepts
+
+* **App function** — a single capability the agent can call on behalf of the
+  user, e.g. *create a task*, *search contacts*, *send a message*.
+* **Definition** — the schema (id, description, parameters, return type) you
+  register on the Dart side.
+* **Handler** — the Dart async function that runs when the agent calls the
+  function.
+* **Bridge** — the Kotlin side of the plugin. It exposes a single
+  `@AppFunction` to the Android App Functions runtime and dispatches calls
+  to the Dart registry.
+* **Base application** — `FlutterAppFunctionsApplication`, the
+  `Application` subclass your host app extends to register the bridge with
+  the AppFunctions system.
+
+The plugin lives at one level of indirection on purpose: you write the
+function **once** in Dart, and the Kotlin side dynamically forwards every
+parameter and return value through the same single `@AppFunction`. This means
+adding or removing a function does not require a Gradle rebuild.
+
+---
 
 ## Installation
 
-Add the package to your app:
+Add the package to your Flutter app:
 
 ```yaml
 dependencies:
-  flutter_app_functions: ^0.0.1
+  flutter_app_functions: ^0.0.2
 ```
 
-For local development, use a path dependency that points to this package.
+For local development, use a path dependency:
 
-## Usage
+```yaml
+dependencies:
+  flutter_app_functions:
+    path: ../flutter_app_functions
+```
 
-Initialize Flutter bindings before registering handlers, then register a tool
-handler early in app startup:
+The plugin's Android manifest already contributes the
+`appfunctions:APP_FUNCTION_SERVICE` permission, the
+`<service>` declaration, and the `res/xml/app_metadata.xml` entry. The host
+app's manifest only needs to opt in (see
+[Wiring up the Android host app](#wiring-up-the-android-host-app)).
+
+---
+
+## Quick start
+
+In `lib/main.dart`:
 
 ```dart
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app_functions/flutter_app_functions.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  FlutterAppFunctions.instance.registerToolHandler((
-    String toolName,
-    String parametersJson,
-  ) async {
-    if (toolName == 'create_task') {
-      final data = jsonDecode(parametersJson) as Map<String, dynamic>;
-      final title = data['title'] as String? ?? 'Untitled Task';
-      return 'Created task: $title';
-    }
-
-    return 'Unknown tool: $toolName';
-  });
+  FlutterAppFunctions.instance.register(
+    AppFunctionDefinition(
+      id: 'createTask',
+      description: 'Creates a new task in the user\'s task list.',
+      parameters: [
+        AppFunctionParameter.string('title'),
+        AppFunctionParameter.optionalString('notes'),
+      ],
+      returnType: AppFunctionReturnType.string,
+      handler: (context, params) async {
+        final title = params['title'] as String;
+        final notes = params['notes'] as String?;
+        return 'Created task "$title"';
+      },
+    ),
+  );
 
   runApp(const MyApp());
 }
 ```
 
-You can still call the generated platform-version method:
+In `android/app/src/main/AndroidManifest.xml`:
 
-```dart
-final version = await FlutterAppFunctions().getPlatformVersion();
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions">
+
+    <application
+        android:name=".MyApplication"
+        appfn:description="@string/appfn_description"
+        appfn:displayDescription="@string/appfn_display_description">
+        ...
+    </application>
+</manifest>
 ```
 
-## Android App Function
-
-The native Android implementation exposes:
+In `android/app/src/main/kotlin/.../MyApplication.kt`:
 
 ```kotlin
-suspend fun executeDartTool(
-    context: AppFunctionContext,
-    toolName: String,
-    parametersJson: String
-): String
+package com.example.myapp
+
+import com.mohitkoley.flutter_app_functions.FlutterAppFunctionsApplication
+
+class MyApplication : FlutterAppFunctionsApplication()
 ```
 
-`parametersJson` should be a JSON object string. The Dart handler is responsible
-for parsing and validating the data.
+In `android/app/src/main/res/values/strings.xml`:
 
-## Example
-
-Run the bundled example app from the `example` directory:
-
-```sh
-cd example
-flutter run
+```xml
+<resources>
+    <string name="appfn_description">com.example.myapp</string>
+    <string name="appfn_display_description">My App — lets the agent do useful things.</string>
+</resources>
 ```
 
-The example registers a `create_task` handler and displays a listener status
-screen while waiting for on-device App Function calls.
+Build, install, and the function shows up in
+`adb shell cmd appfunctions list-app-functions`.
 
-## References
+---
 
-- Original Android AppFunctions documentation: [Overview of AppFunctions](https://developer.android.com/ai/appfunctions)
+## Declaring an app function
 
-## Testing
+A function is a value of `AppFunctionDefinition` passed to
+`FlutterAppFunctions.instance.register(...)`:
 
-Run package analysis and tests from the package root:
+```dart
+AppFunctionDefinition(
+  id: 'createTask',                     // required
+  description: '...',                   // required, surfaced to the agent
+  parameters: [ ... ],                  // optional, defaults to []
+  returnType: AppFunctionReturnType.string, // optional, defaults to void
+  handler: (context, params) async { ... }, // required
+)
+```
+
+* `id` must be unique within the registry. Re-registering with the same id
+  replaces the existing definition.
+* `description` is KDoc-style documentation of the function. It is exposed to
+  the agent verbatim, so write it the way you would write a public API
+  docstring.
+* `parameters` is the ordered list of accepted parameters (see below).
+* `returnType` defaults to `AppFunctionReturnType.voidType`. Set it explicitly
+  for any function that returns data.
+* `handler` is the async Dart function executed when the agent calls the
+  function. It receives:
+  * `context` — an `AppFunctionContext` with the `functionId` and the
+    validated, type-coerced parameter map.
+  * `parameters` — the same validated map, for convenience.
+  It should return the declared return value, or `null` for void returns.
+
+### Parameters
+
+Each parameter is an `AppFunctionParameter`. The supported scalar types map
+1:1 to `androidx.appfunctions.AppFunctionData`:
+
+| Dart factory | Wire type | Description |
+| --- | --- | --- |
+| `AppFunctionParameter.string(name, ...)` | `String` | UTF-8 string. |
+| `AppFunctionParameter.optionalString(name, ...)` | `String?` | Optional string. |
+| `AppFunctionParameter.int(name, ...)` | `int64` | 64-bit signed integer. |
+| `AppFunctionParameter.double(name, ...)` | `double` | IEEE-754 double. |
+| `AppFunctionParameter.bool(name, ...)` | `bool` | Boolean. |
+| `AppFunctionParameter.stringList(name, ...)` | `List<String>` | Ordered list of strings. |
+
+Optional parameters default to `required: true`; pass `required: false` to
+mark a string as optional:
+
+```dart
+AppFunctionParameter.string('filter', required: false)
+```
+
+String parameters can be restricted to an enum-like set:
+
+```dart
+AppFunctionParameter.string(
+  'filterType',
+  description: 'Either "INDIVIDUAL" or "GROUP".',
+  enumValues: ['INDIVIDUAL', 'GROUP'],
+)
+```
+
+Enum violations, missing required values, wrong types, and unknown keys all
+raise `AppFunctionInvalidArgumentException` and are surfaced to the agent as
+a typed `androidx.appfunctions.AppFunctionInvalidArgumentException`.
+
+### Return types
+
+`AppFunctionReturnType` mirrors the same scalar set plus a void marker:
+
+```dart
+AppFunctionReturnType.voidType    // handler returns null/void
+AppFunctionReturnType.string      // handler returns String
+AppFunctionReturnType.int64       // handler returns int
+AppFunctionReturnType.double      // handler returns double
+AppFunctionReturnType.boolean     // handler returns bool
+AppFunctionReturnType.stringList  // handler returns List<String>
+```
+
+Handlers that return a different type throw
+`AppFunctionAppUnknownException` and the agent sees the same typed error
+it would from a native App Function.
+
+---
+
+## Errors
+
+The Dart exception hierarchy maps 1:1 to `androidx.appfunctions`:
+
+| Dart exception | Kotlin exception | Error code |
+| --- | --- | --- |
+| `AppFunctionInvalidArgumentException` | `AppFunctionInvalidArgumentException` | `AppFunctionInvalidArgument` |
+| `AppFunctionElementNotFoundException` | `AppFunctionElementNotFoundException` | `AppFunctionElementNotFound` |
+| `AppFunctionFunctionNotFoundException` | `AppFunctionFunctionNotFoundException` | `AppFunctionFunctionNotFound` |
+| `AppFunctionNotSupportedException` | `AppFunctionNotSupportedException` | `AppFunctionNotSupported` |
+| `AppFunctionPermissionRequiredException` | `AppFunctionPermissionRequiredException` | `AppFunctionPermissionRequired` |
+| `AppFunctionDisabledException` | `AppFunctionDisabledException` | `AppFunctionDisabled` |
+| `AppFunctionAppUnknownException` | `AppFunctionAppUnknownException` | `AppFunctionAppUnknown` |
+
+Throw any of these from your handler and the agent sees the matching typed
+exception on the Kotlin side:
+
+```dart
+handler: (context, params) async {
+  if (!userHasAccess) {
+    throw AppFunctionPermissionRequiredException('User has not granted access.');
+  }
+  ...
+}
+```
+
+Handlers that throw any other error are wrapped as
+`AppFunctionAppUnknownException`.
+
+---
+
+## Wiring up the Android host app
+
+The plugin takes care of every manifest entry *inside* the
+`<application>` element, so the host app's manifest only needs to:
+
+1. Declare the `xmlns:appfn` namespace.
+2. Set `android:name=".MyApplication"` (or your equivalent) on
+   `<application>`.
+3. Provide `appfn:description` and `appfn:displayDescription` attributes
+   on `<application>`.
+4. Override the `appfn_description` / `appfn_display_description` strings
+   in your `res/values/strings.xml` (the plugin ships sensible defaults
+   so step 4 is optional).
+
+Then point your custom `Application` class at
+`FlutterAppFunctionsApplication`:
+
+```kotlin
+class MyApplication : FlutterAppFunctionsApplication()
+```
+
+That's the only Kotlin code you need to write. `FlutterAppFunctionsApplication`
+implements `AppFunctionConfiguration.Provider` and registers the
+`AppFunctionsBridge` with the AppFunctions runtime.
+
+### Gradle
+
+If your app's own modules declare their own `@AppFunction`s, add the
+following to your **app-level** `android/app/build.gradle.kts` so the KSP
+processor aggregates them all into a single metadata file:
+
+```kotlin
+ksp {
+    arg("appfunctions:aggregateAppFunctions", "true")
+}
+```
+
+(For pure plugin users, this block is already added to the plugin's
+`android/build.gradle.kts`.)
+
+---
+
+## Calling a function from an agent
+
+The agent interacts with the Kotlin bridge; the plugin takes care of the
+Dart round-trip. Once your app is installed:
 
 ```sh
-flutter analyze
+# List every function the bridge exposes:
+adb shell cmd appfunctions list-app-functions
+
+# Invoke a function by id:
+adb shell cmd appfunctions execute-app-function \
+    --uri appfunctions://com.mohitkoley.flutter_app_functions/executeAppFunction \
+    --function-id createTask \
+    --params '{"title":"Buy milk","notes":"2L semi-skimmed"}'
+```
+
+The agent (e.g. Gemini) sees the function descriptions and parameters as
+ordinary Android AppFunctions and calls them through the standard
+`AppFunctionManager` flow.
+
+---
+
+## Testing your app functions
+
+### Dart
+
+```sh
 flutter test
 ```
 
-Run Android unit tests through the example app Gradle project:
+The suite covers the registry, the type-coercion validator, the
+exception-hierarchy mapping, and the round-trip through the method
+channel. The method channel is mocked via
+`TestDefaultBinaryMessengerBinding.setMockMethodCallHandler`.
+
+### Kotlin
 
 ```sh
 cd example/android
 ./gradlew testDebugUnitTest
 ```
+
+The Kotlin unit tests cover the plugin's lifecycle (`getPlatformVersion`).
+The suspend `executeAppFunction` entry point is covered indirectly by
+the integration test because it requires a real Flutter engine channel,
+and the alpha08 `AppFunction*Exception` subclasses cannot be
+constructed in plain JVM tests (their constructors touch
+`android.os.Bundle.EMPTY`, which is only initialised inside a real
+Android runtime).
+
+### Integration
+
+```sh
+cd example
+flutter test integration_test
+```
+
+Drives the example app's plugin, registering sample functions and
+exercising the method channel from the host side.
+
+---
+
+## Limitations
+
+* Android only.
+* The plugin targets `androidx.appfunctions:1.0.0-alpha08`, which is an
+  alpha release of the AppFunctions library.
+* Nested object and array-of-object parameters are not supported — only
+  the scalar types listed above. The `AppFunctionData` wire format
+  supports richer shapes; the plugin exposes the common subset to keep
+  the Dart surface ergonomic.
+* Boolean and double are exposed as `boolean` / `double` in the return
+  type, matching the official App Functions API.
+
+---
+
+## References
+
+* [Overview of App Functions](https://developer.android.com/ai/appfunctions)
+* [`androidx.appfunctions` release notes](https://developer.android.com/jetpack/androidx/releases/appfunctions)
+* [App Functions sample app](https://github.com/android/appfunctions-sample)

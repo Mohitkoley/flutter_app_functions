@@ -1,58 +1,57 @@
-import 'flutter_app_functions_platform_interface.dart';
-import 'package:flutter/services.dart';
+/// Public entry point for the Flutter App Functions plugin.
+///
+/// This package is a 1:1 Flutter wrapper of the Android
+/// [AppFunctions](https://developer.android.com/ai/appfunctions) API.
+/// It exposes the same concepts (typed parameters, typed return values,
+/// typed exceptions) from Dart, and dispatches calls from the agent
+/// (e.g. Gemini) to handlers registered in your Flutter app.
+///
+/// ## Quick start
+///
+/// ```dart
+/// import 'package:flutter/widgets.dart';
+/// import 'package:flutter_app_functions/flutter_app_functions.dart';
+///
+/// void main() {
+///   WidgetsFlutterBinding.ensureInitialized();
+///
+///   FlutterAppFunctions.instance
+///     ..register(AppFunctionDefinition(
+///       id: 'createTask',
+///       description: 'Creates a new task in the user's task list.',
+///       parameters: [
+///         AppFunctionParameter.string('title'),
+///         AppFunctionParameter.optionalString('notes'),
+///       ],
+///       returnType: AppFunctionReturnType.string,
+///       handler: (ctx, params) async {
+///         return 'Created task: ${params['title']}';
+///       },
+///     ));
+///
+///   runApp(const MyApp());
+/// }
+/// ```
+///
+/// Then, in your Android `Application`:
+///
+/// ```kotlin
+/// class MyApplication : FlutterAppFunctionsApplication()
+/// ```
+///
+/// and in `AndroidManifest.xml`:
+///
+/// ```xml
+/// <application
+///     android:name=".MyApplication"
+///     appfn:description="@string/appfn_description"
+///     appfn:displayDescription="@string/appfn_display_description">
+/// ```
+library;
 
-typedef ToolHandler =
-    Future<String> Function(String toolName, String parametersJson);
-
-class FlutterAppFunctions {
-  // Private constructor
-  FlutterAppFunctions._internal() {
-    _channel.setMethodCallHandler(_methodCallHandler);
-  }
-
-  Future<String?> getPlatformVersion() {
-    return FlutterAppFunctionsPlatform.instance.getPlatformVersion();
-  }
-
-  factory FlutterAppFunctions() {
-    return instance;
-  }
-
-  // Singleton Instance
-  static final FlutterAppFunctions instance = FlutterAppFunctions._internal();
-
-  final MethodChannel _channel = const MethodChannel(
-    'flutter_app_functions_channel',
-  );
-  ToolHandler? _registeredHandler;
-
-  /// Registers the main processing handler to intercept agent tool executions.
-  void registerToolHandler(ToolHandler handler) {
-    _registeredHandler = handler;
-  }
-
-  Future<dynamic> _methodCallHandler(MethodCall call) async {
-    switch (call.method) {
-      case 'onInvokeAgentTool':
-        final Map<dynamic, dynamic> arguments =
-            call.arguments as Map<dynamic, dynamic>;
-        final String toolName = arguments['toolName'] as String;
-        final String parametersJson = arguments['parametersJson'] as String;
-
-        if (_registeredHandler != null) {
-          try {
-            return await _registeredHandler!(toolName, parametersJson);
-          } catch (e) {
-            return 'Dart Exception: ${e.toString()}';
-          }
-        }
-        return 'Error: No Dart Tool Handlers registered.';
-      default:
-        throw PlatformException(
-          code: 'Unimplemented',
-          details:
-              'flutter_app_functions: Method ${call.method} not implemented.',
-        );
-    }
-  }
-}
+export 'src/exceptions.dart';
+export 'src/models/app_function_context.dart';
+export 'src/models/app_function_definition.dart';
+export 'src/models/app_function_parameter.dart';
+export 'src/models/app_function_return_type.dart';
+export 'src/flutter_app_functions.dart';

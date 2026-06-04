@@ -1,6 +1,6 @@
 name: flutter_app_functions
-description: "Flutter plugin for exposing Android App Functions to Dart tool handlers."
-version: 0.0.1
+description: "Flutter plugin that mirrors the Android App Functions API. Register typed Dart functions that Android agents (Gemini and friends) can discover and invoke on-device."
+version: 0.0.2
 repository: https://github.com/mohitkoley/flutter_app_functions
 issue_tracker: https://github.com/mohitkoley/flutter_app_functions/issues
 topics:
@@ -8,6 +8,7 @@ topics:
   - android
   - ai
   - tools
+  - gemini
 
 environment:
   sdk: ^3.12.0
