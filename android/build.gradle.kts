@@ -80,9 +80,11 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.3.20")
     testImplementation("org.mockito:mockito-core:5.0.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    api("androidx.appfunctions:appfunctions:1.0.0-alpha08")
-    api("androidx.appfunctions:appfunctions-service:1.0.0-alpha08")
-    ksp("androidx.appfunctions:appfunctions-compiler:1.0.0-alpha08")
+    implementation "androidx.appfunctions:appfunctions:1.0.0-alpha09"
+    implementation "androidx.appfunctions:appfunctions-service:1.0.0-alpha09"
+    // Use Kotlin Symbol Processing (KSP) for the appfunctions compiler plugin.
+    // See KSP Quickstart to add KSP to your build
+    ksp "androidx.appfunctions:appfunctions-compiler:1.0.0-alpha09"
 
     if (flutterSdkPath != null) {
         compileOnly(files("$flutterSdkPath/bin/cache/artifacts/engine/android-x64/flutter.jar"))
