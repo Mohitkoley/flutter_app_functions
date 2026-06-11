@@ -82,8 +82,6 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     implementation "androidx.appfunctions:appfunctions:1.0.0-alpha09"
     implementation "androidx.appfunctions:appfunctions-service:1.0.0-alpha09"
-    // Use Kotlin Symbol Processing (KSP) for the appfunctions compiler plugin.
-    // See KSP Quickstart to add KSP to your build
     ksp "androidx.appfunctions:appfunctions-compiler:1.0.0-alpha09"
 
     if (flutterSdkPath != null) {
