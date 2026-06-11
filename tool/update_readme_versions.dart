@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 /// Reads version values from source files and updates the version table
@@ -7,11 +8,13 @@ import 'dart:io';
 void main() {
   final projectRoot = Directory.current;
 
-  final gradleFile = File(projectRoot.path + '/android/build.gradle.kts');
-  final pubspecFile = File(projectRoot.path + '/pubspec.yaml');
-  final readmeFile = File(projectRoot.path + '/README.md');
+  final gradleFile = File('${projectRoot.path}/android/build.gradle.kts');
+  final pubspecFile = File('${projectRoot.path}/pubspec.yaml');
+  final readmeFile = File('${projectRoot.path}/README.md');
 
-  if (!gradleFile.existsSync() || !pubspecFile.existsSync() || !readmeFile.existsSync()) {
+  if (!gradleFile.existsSync() ||
+      !pubspecFile.existsSync() ||
+      !readmeFile.existsSync()) {
     stderr.writeln('ERROR: Run this from the project root.');
     exit(1);
   }
@@ -23,25 +26,36 @@ void main() {
   // --- Extract values ---
   final compileSdk = _extract(gradle, r'compileSdk\s*=\s*(\d+)');
   final minSdk = _extract(gradle, r'minSdk\s*=\s*(\d+)');
-  final appfunctionsVersion =
-      _extract(gradle, r'androidx\.appfunctions:appfunctions:([^")\s]+)');
+  final appfunctionsVersion = _extract(
+    gradle,
+    r'androidx\.appfunctions:appfunctions:([^")\s]+)',
+  );
 
   // pubspec constraints – e.g. ">=3.3.0" or "^3.12.0"
-  final sdkConstraintRaw = _extract(pubspec, r'^\s+sdk:\s*([^\n]+)', multiLine: true);
-  final flutterConstraintRaw =
-      _extract(pubspec, r"^\s+flutter:\s*'?([^'\n]+)", multiLine: true);
+  final sdkConstraintRaw = _extract(
+    pubspec,
+    r'^\s+sdk:\s*([^\n]+)',
+    multiLine: true,
+  );
+  final flutterConstraintRaw = _extract(
+    pubspec,
+    r"^\s+flutter:\s*'?([^'\n]+)",
+    multiLine: true,
+  );
 
   final flutterDisplay = _friendlyConstraint(flutterConstraintRaw, 'Flutter');
   final dartDisplay = _friendlyConstraint(sdkConstraintRaw, 'Dart');
 
   // --- Build the table ---
-  final table = '''
+  final table =
+      '''
 | | |
 | --- | --- |
 | Android only | Minimum SDK $minSdk, compile SDK $compileSdk |
 | AndroidX `appfunctions` | `$appfunctionsVersion` |
 | Flutter | $flutterDisplay with $dartDisplay |
-| Latest release | See the pub.dev badge above |'''.trim();
+| Latest release | See the pub.dev badge above |'''
+          .trim();
 
   // --- Replace content between markers ---
   const markerStart = '<!-- VERSIONS -->';
@@ -61,17 +75,16 @@ void main() {
   final updated = '$before\n$table\n$after';
 
   readmeFile.writeAsStringSync(updated);
-  print('✓ README.md updated');
-  print('  minSdk=$minSdk, compileSdk=$compileSdk');
-  print('  appfunctions=$appfunctionsVersion');
-  print('  $flutterDisplay, $dartDisplay');
+  log('  minSdk=$minSdk, compileSdk=$compileSdk');
+  log('  appfunctions=$appfunctionsVersion');
+  log('  $flutterDisplay, $dartDisplay');
+  log('✓ README.md updated');
 }
 
 /// Extracts the first capture group for [pattern] in [text].
 String _extract(String text, String pattern, {bool multiLine = false}) {
-  return RegExp(pattern, multiLine: multiLine)
-      .firstMatch(text)
-      ?.group(1) ?? '?';
+  return RegExp(pattern, multiLine: multiLine).firstMatch(text)?.group(1) ??
+      '?';
 }
 
 /// Converts a raw pubspec constraint like `>=3.3.0` or `^3.12.0` into a
