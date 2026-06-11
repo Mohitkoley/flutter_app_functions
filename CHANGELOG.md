@@ -1,3 +1,7 @@
+## 0.0.9
+
+* I have updated alpha 0.0.9 in kotlin.
+
 ## 0.0.7
 
 * Example: replaced the toy sample with a realistic productivity app that
