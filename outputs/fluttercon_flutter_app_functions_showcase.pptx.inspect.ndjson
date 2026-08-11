@@ -1,0 +1,153 @@
+{"kind":"deck","id":"pr/sdn8hd","name":"Deck"}
+{"kind":"layout","layoutId":"0b40fb6c-0619-42f8-b9be-c0c32c318728","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"d89b75f8-de9d-4ff1-8f76-bb587d82f92f","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/p0skpi","slide":1,"title":"FLUTTERCON","textShapes":4}
+{"kind":"shape","id":"sh/upwb2hwf","slide":1,"bbox":[0,0,570,720]}
+{"kind":"textbox","id":"sh/nap4r65w","slide":1,"text":"FLUTTERCON","textPreview":"FLUTTERCON","textChars":10,"textLines":1,"bbox":[42,42,280,30]}
+{"kind":"textbox","id":"sh/cj6tovah","slide":1,"text":"Flutter App Functions","textPreview":"Flutter App Functions","textChars":21,"textLines":1,"bbox":[42,164,500,166]}
+{"kind":"textbox","id":"sh/54zidony","slide":1,"text":"Expose Dart handlers as discoverable on-device Android App Functions.","textPreview":"Expose Dart handlers as discoverable on-device Android App Functions.","textChars":69,"textLines":1,"bbox":[44,358,438,110]}
+{"kind":"textbox","id":"sh/udg7adsj","slide":1,"text":"Project showcase deck","textPreview":"Project showcase deck","textChars":21,"textLines":1,"bbox":[44,604,360,30]}
+{"kind":"image","id":"im/cvixczed","slide":1,"name":"","alt":"Abstract Flutter app to Android App Functions to on-device agent workflow","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/p0skpi","slide":1,"text":""}
+{"kind":"slide","id":"sl/z4jqgw","slide":2,"title":"FLUTTERCON PROJECT SHOWCASE","textShapes":9}
+{"kind":"textbox","id":"sh/1orytsvu","slide":2,"text":"FLUTTERCON PROJECT SHOWCASE","textPreview":"FLUTTERCON PROJECT SHOWCASE","textChars":27,"textLines":1,"bbox":[42,34,640,28]}
+{"kind":"textbox","id":"sh/u18jqh0f","slide":2,"text":"The gap this project closes","textPreview":"The gap this project closes","textChars":27,"textLines":1,"bbox":[42,76,960,74]}
+{"kind":"shape","id":"sh/jm1cfa9w","slide":2,"bbox":[42,160,1196,1]}
+{"kind":"textbox","id":"sh/cfa9w3m9","slide":2,"text":"Android is making app capabilities callable by on-device agents, but Flutter apps still keep most product logic in Dart.","textPreview":"Android is making app capabilities callable by on-device agents, but Flutter apps still keep most product logic in Dart.","textChars":120,"textLines":1,"bbox":[42,205,510,112]}
+{"kind":"shape","id":"sh/1032lszq","slide":2,"bbox":[662,224,10,10]}
+{"kind":"textbox","id":"sh/u9knih4b","slide":2,"text":"Native examples do not map cleanly to Flutter state, providers, stores, or existing Dart handlers.","textPreview":"Native examples do not map cleanly to Flutter state, providers, stores, or existing Dart handlers.","textChars":98,"textLines":1,"bbox":[686,216,496,82]}
+{"kind":"shape","id":"sh/judg7ads","slide":2,"bbox":[662,310,10,10]}
+{"kind":"textbox","id":"sh/cj6tovah","slide":2,"text":"Every new capability should not require another Kotlin rebuild path.","textPreview":"Every new capability should not require another Kotlin rebuild path.","textChars":68,"textLines":1,"bbox":[686,302,496,82]}
+{"kind":"shape","id":"sh/54zidony","slide":2,"bbox":[662,396,10,10]}
+{"kind":"textbox","id":"sh/t47y1kre","slide":2,"text":"Agent calls need predictable typed errors, not ad hoc string failures.","textPreview":"Agent calls need predictable typed errors, not ad hoc string failures.","textChars":70,"textLines":1,"bbox":[686,388,496,82]}
+{"kind":"shape","id":"sh/0je9cvix","slide":2,"bbox":[42,390,532,178]}
+{"kind":"textbox","id":"sh/byhgn29g","slide":2,"text":"Core idea","textPreview":"Core idea","textChars":9,"textLines":1,"bbox":[70,420,200,30]}
+{"kind":"textbox","id":"sh/idonyd0z","slide":2,"text":"Register once in Dart. Let Android discover a stable bridge. Keep the user-visible app state as the source of truth.","textPreview":"Register once in Dart. Let Android discover a stable bridge. Keep the user-visible app state as the source of truth.","textChars":116,"textLines":1,"bbox":[70,466,450,62]}
+{"kind":"textbox","id":"sh/tcj6tova","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1184,660,54,24]}
+{"kind":"notes","id":"nt/z4jqgw","slide":2,"text":""}
+{"kind":"slide","id":"sl/bnfhob","slide":3,"title":"FLUTTERCON PROJECT SHOWCASE","textShapes":16}
+{"kind":"textbox","id":"sh/bulwval8","slide":3,"text":"FLUTTERCON PROJECT SHOWCASE","textPreview":"FLUTTERCON PROJECT SHOWCASE","textChars":27,"textLines":1,"bbox":[42,34,640,28]}
+{"kind":"textbox","id":"sh/0fepkzup","slide":3,"text":"What the package ships today","textPreview":"What the package ships today","textChars":28,"textLines":1,"bbox":[42,76,960,74]}
+{"kind":"shape","id":"sh/p0bi9s36","slide":3,"bbox":[42,160,1196,1]}
+{"kind":"shape","id":"sh/ixczed8v","slide":3,"bbox":[42,214,270,210]}
+{"kind":"textbox","id":"sh/bi9s36hc","slide":3,"text":"0.0.9","textPreview":"0.0.9","textChars":5,"textLines":1,"bbox":[66,240,222,72]}
+{"kind":"textbox","id":"sh/032lszqt","slide":3,"text":"Current package version","textPreview":"Current package version","textChars":23,"textLines":1,"bbox":[66,320,222,52]}
+{"kind":"textbox","id":"sh/tovahoza","slide":3,"text":"pubspec release metadata","textPreview":"pubspec release metadata","textChars":24,"textLines":1,"bbox":[66,378,222,34]}
+{"kind":"shape","id":"sh/il0rqd4v","slide":3,"bbox":[352,214,270,210]}
+{"kind":"textbox","id":"sh/b6xkf6dc","slide":3,"text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[376,240,222,72]}
+{"kind":"textbox","id":"sh/32lszqtc","slide":3,"text":"Typed parameter kinds","textPreview":"Typed parameter kinds","textChars":21,"textLines":1,"bbox":[376,320,222,52]}
+{"kind":"textbox","id":"sh/ahoza1gv","slide":3,"text":"string, int64, double, bool, list, optional","textPreview":"string, int64, double, bool, list, optional","textChars":43,"textLines":1,"bbox":[376,378,222,34]}
+{"kind":"shape","id":"sh/l87ed8ba","slide":3,"bbox":[662,214,270,210]}
+{"kind":"textbox","id":"sh/sneloj2t","slide":3,"text":"7","textPreview":"7","textChars":1,"textLines":1,"bbox":[686,240,222,72]}
+{"kind":"textbox","id":"sh/3ex0nuxc","slide":3,"text":"Mirrored error types","textPreview":"Mirrored error types","textChars":20,"textLines":1,"bbox":[686,320,222,52]}
+{"kind":"textbox","id":"sh/at47y1kr","slide":3,"text":"Android AppFunction exceptions","textPreview":"Android AppFunction exceptions","textChars":30,"textLines":1,"bbox":[686,378,222,34]}
+{"kind":"shape","id":"sh/lkjm1cfa","slide":3,"bbox":[972,214,266,210]}
+{"kind":"textbox","id":"sh/szqtcj6t","slide":3,"text":"22","textPreview":"22","textChars":2,"textLines":1,"bbox":[996,240,218,72]}
+{"kind":"textbox","id":"sh/3itgfmlk","slide":3,"text":"Passing Dart tests","textPreview":"Passing Dart tests","textChars":18,"textLines":1,"bbox":[996,320,218,52]}
+{"kind":"textbox","id":"sh/ex0nuxc3","slide":3,"text":"flutter test verification","textPreview":"flutter test verification","textChars":25,"textLines":1,"bbox":[996,378,218,34]}
+{"kind":"textbox","id":"sh/i9s36hcr","slide":3,"text":"Android only: min SDK 24, compile SDK 36, AndroidX appfunctions 1.0.0-alpha09, Flutter 3.3.0+ / Dart 3.12.0+.","textPreview":"Android only: min SDK 24, compile SDK 36, AndroidX appfunctions 1.0.0-alpha09, Flutter 3.3.0+ / Dart 3.12.0+.","textChars":109,"textLines":1,"bbox":[42,594,1030,46]}
+{"kind":"textbox","id":"sh/bulwval8","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1184,660,54,24]}
+{"kind":"notes","id":"nt/bnfhob","slide":3,"text":""}
+{"kind":"slide","id":"sl/t8pr46","slide":4,"title":"FLUTTERCON PROJECT SHOWCASE","textShapes":12}
+{"kind":"textbox","id":"sh/25kb6xkf","slide":4,"text":"FLUTTERCON PROJECT SHOWCASE","textPreview":"FLUTTERCON PROJECT SHOWCASE","textChars":27,"textLines":1,"bbox":[42,34,640,28]}
+{"kind":"textbox","id":"sh/9w3m94fu","slide":4,"text":"Architecture: one native entry point, many Dart tools","textPreview":"Architecture: one native entry point, many Dart tools","textChars":53,"textLines":1,"bbox":[42,76,960,74]}
+{"kind":"shape","id":"sh/kb6xkf6d","slide":4,"bbox":[42,160,1196,1]}
+{"kind":"shape","id":"sh/re1w7mp0","slide":4,"bbox":[42,266,228,180]}
+{"kind":"textbox","id":"sh/2t83itgf","slide":4,"text":"Agent","textPreview":"Agent","textChars":5,"textLines":1,"bbox":[64,296,184,34]}
+{"kind":"textbox","id":"sh/9knih4by","slide":4,"text":"Gemini or any caller using Android App Functions","textPreview":"Gemini or any caller using Android App Functions","textChars":48,"textLines":1,"bbox":[64,352,184,66]}
+{"kind":"shape","id":"sh/kzupwb2h","slide":4,"bbox":[326,266,228,180]}
+{"kind":"textbox","id":"sh/ra5gbq1o","slide":4,"text":"Android runtime","textPreview":"Android runtime","textChars":15,"textLines":1,"bbox":[348,296,184,34]}
+{"kind":"textbox","id":"sh/2p8nqxs7","slide":4,"text":"Discovers @AppFunction executeAppFunction","textPreview":"Discovers @AppFunction executeAppFunction","textChars":41,"textLines":1,"bbox":[348,352,184,66]}
+{"kind":"shape","id":"sh/gvy90je9","slide":4,"bbox":[610,266,228,180]}
+{"kind":"textbox","id":"sh/9gr2p8nq","slide":4,"text":"Kotlin bridge","textPreview":"Kotlin bridge","textChars":13,"textLines":1,"bbox":[632,296,184,34]}
+{"kind":"textbox","id":"sh/2p8nqxs7","slide":4,"text":"Forwards functionId + parametersJson","textPreview":"Forwards functionId + parametersJson","textChars":36,"textLines":1,"bbox":[632,352,184,66]}
+{"kind":"shape","id":"sh/ra5gbq1o","slide":4,"bbox":[894,266,228,180]}
+{"kind":"textbox","id":"sh/kjm1cfa9","slide":4,"text":"Dart registry","textPreview":"Dart registry","textChars":13,"textLines":1,"bbox":[916,296,184,34]}
+{"kind":"textbox","id":"sh/94fu18jq","slide":4,"text":"Validates, invokes handler, returns JSON","textPreview":"Validates, invokes handler, returns JSON","textChars":40,"textLines":1,"bbox":[916,352,184,66]}
+{"kind":"shape","id":"sh/2hwfyxob","slide":4,"bbox":[270,356,56,0]}
+{"kind":"shape","id":"sh/r2p8nqxs","slide":4,"bbox":[554,356,56,0]}
+{"kind":"shape","id":"sh/kb6xkf6d","slide":4,"bbox":[838,356,56,0]}
+{"kind":"textbox","id":"sh/9w3m94fu","slide":4,"text":"Why this matters: app teams add or remove capabilities in Dart without duplicating business logic in Kotlin.","textPreview":"Why this matters: app teams add or remove capabilities in Dart without duplicating business logic in Kotlin.","textChars":108,"textLines":1,"bbox":[104,530,1060,52]}
+{"kind":"textbox","id":"sh/dg7adsji","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1184,660,54,24]}
+{"kind":"notes","id":"nt/t8pr46","slide":4,"text":""}
+{"kind":"slide","id":"sl/old7jo","slide":5,"title":"FLUTTERCON PROJECT SHOWCASE","textShapes":7}
+{"kind":"textbox","id":"sh/xkf6dcbu","slide":5,"text":"FLUTTERCON PROJECT SHOWCASE","textPreview":"FLUTTERCON PROJECT SHOWCASE","textChars":27,"textLines":1,"bbox":[42,34,640,28]}
+{"kind":"textbox","id":"sh/mtwra5gb","slide":5,"text":"The developer experience","textPreview":"The developer experience","textChars":24,"textLines":1,"bbox":[42,76,960,74]}
+{"kind":"shape","id":"sh/fepkzupw","slide":5,"bbox":[42,160,1196,1]}
+{"kind":"shape","id":"sh/4r65wjud","slide":5,"bbox":[42,206,626,394]}
+{"kind":"textbox","id":"sh/xc3ylc7u","slide":5,"text":"FlutterAppFunctions.instance.register(\n  AppFunctionDefinition(\n    id: 'createTask',\n    description: 'Creates a task.',\n    parameters: [\n      AppFunctionParameter.string('title'),\n      AppFunctionParameter.optionalString('notes'),\n    ],\n    returnType: AppFunctionReturnType.string,\n    handler: (ctx, params) async {\n      return 'Created: ${params['title']}';\n    },\n  ),\n);","textPreview":"FlutterAppFunctions.instance.register( |   AppFunctionDefinition( |     id: 'createTask', |     description: 'Creates a task.', |     par...","textChars":382,"textLines":14,"bbox":[64,226,582,354]}
+{"kind":"shape","id":"sh/mlkjm1cf","slide":5,"bbox":[722,242,10,10]}
+{"kind":"textbox","id":"sh/f6dcbulw","slide":5,"text":"Function definition is plain Dart: id, description, parameters, return type, handler.","textPreview":"Function definition is plain Dart: id, description, parameters, return type, handler.","textChars":85,"textLines":1,"bbox":[746,234,432,88]}
+{"kind":"shape","id":"sh/4fu18jqh","slide":5,"bbox":[722,334,10,10]}
+{"kind":"textbox","id":"sh/x0nuxc3y","slide":5,"text":"Registry validates required fields, unknown parameters, enum values, and scalar types.","textPreview":"Registry validates required fields, unknown parameters, enum values, and scalar types.","textChars":86,"textLines":1,"bbox":[746,326,432,88]}
+{"kind":"shape","id":"sh/lkjm1cfa","slide":5,"bbox":[722,426,10,10]}
+{"kind":"textbox","id":"sh/szqtcj6t","slide":5,"text":"Handlers can mutate the same Flutter app state the visible UI already uses.","textPreview":"Handlers can mutate the same Flutter app state the visible UI already uses.","textChars":75,"textLines":1,"bbox":[746,418,432,88]}
+{"kind":"textbox","id":"sh/3ex0nuxc","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1184,660,54,24]}
+{"kind":"notes","id":"nt/old7jo","slide":5,"text":""}
+{"kind":"slide","id":"sl/dr1rmp","slide":6,"title":"FLUTTERCON PROJECT SHOWCASE","textShapes":6}
+{"kind":"textbox","id":"sh/upwb2hwf","slide":6,"text":"FLUTTERCON PROJECT SHOWCASE","textPreview":"FLUTTERCON PROJECT SHOWCASE","textChars":27,"textLines":1,"bbox":[42,34,640,28]}
+{"kind":"textbox","id":"sh/5gbq1ory","slide":6,"text":"Android host wiring stays small","textPreview":"Android host wiring stays small","textChars":31,"textLines":1,"bbox":[42,76,960,74]}
+{"kind":"shape","id":"sh/cvixczed","slide":6,"bbox":[42,160,1196,1]}
+{"kind":"shape","id":"sh/nyd0z610","slide":6,"bbox":[58,214,520,260]}
+{"kind":"textbox","id":"sh/udg7adsj","slide":6,"text":"class MyApplication :\n    FlutterAppFunctionsApplication()\n\n<application\n  android:name=\".MyApplication\"\n  appfn:description=\"@string/appfn_description\"\n  appfn:displayDescription=\"@string/appfn_display_description\">\n","textPreview":"class MyApplication : |     FlutterAppFunctionsApplication() |  | <application |   android:name=\".MyApplication\" |   appfn:description=\"@...","textChars":217,"textLines":8,"bbox":[80,234,476,220]}
+{"kind":"shape","id":"sh/54zidony","slide":6,"bbox":[678,214,470,260]}
+{"kind":"textbox","id":"sh/cj6tovah","slide":6,"text":"The plugin contributes the Android service, metadata XML, App Functions permission, MethodChannel, KSP setup, and bridge registration base class.","textPreview":"The plugin contributes the Android service, metadata XML, App Functions permission, MethodChannel, KSP setup, and bridge registration bas...","textChars":145,"textLines":1,"bbox":[722,260,390,140]}
+{"kind":"textbox","id":"sh/judg7ads","slide":6,"text":"Host apps only provide app-specific descriptions and extend the base Application class.","textPreview":"Host apps only provide app-specific descriptions and extend the base Application class.","textChars":87,"textLines":1,"bbox":[722,418,372,46]}
+{"kind":"textbox","id":"sh/u9knih4b","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1184,660,54,24]}
+{"kind":"notes","id":"nt/dr1rmp","slide":6,"text":""}
+{"kind":"slide","id":"sl/keqj46","slide":7,"title":"FLUTTERCON PROJECT SHOWCASE","textShapes":16}
+{"kind":"textbox","id":"sh/d8v6psfi","slide":7,"text":"FLUTTERCON PROJECT SHOWCASE","textPreview":"FLUTTERCON PROJECT SHOWCASE","textChars":27,"textLines":1,"bbox":[42,34,640,28]}
+{"kind":"textbox","id":"sh/6hcrmhk3","slide":7,"text":"FlutterCon demo path","textPreview":"FlutterCon demo path","textChars":20,"textLines":1,"bbox":[42,76,960,74]}
+{"kind":"shape","id":"sh/z25kb6xk","slide":7,"bbox":[42,160,1196,1]}
+{"kind":"shape","id":"sh/ovahoza1","slide":7,"bbox":[42,230,250,250]}
+{"kind":"textbox","id":"sh/dg7adsji","slide":7,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[66,250,70,62]}
+{"kind":"textbox","id":"sh/6tovahoz","slide":7,"text":"Prompt","textPreview":"Prompt","textChars":6,"textLines":1,"bbox":[66,326,202,34]}
+{"kind":"textbox","id":"sh/vahoza1g","slide":7,"text":"Remind me to pick up my package at work today at 5 PM","textPreview":"Remind me to pick up my package at work today at 5 PM","textChars":53,"textLines":1,"bbox":[66,376,202,76]}
+{"kind":"shape","id":"sh/o7qpg3ex","slide":7,"bbox":[292,355,50,0]}
+{"kind":"shape","id":"sh/dsji5sne","slide":7,"bbox":[342,230,250,250]}
+{"kind":"textbox","id":"sh/pwb2hwfy","slide":7,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[366,250,70,62]}
+{"kind":"textbox","id":"sh/0bi9s36h","slide":7,"text":"Plan","textPreview":"Plan","textChars":4,"textLines":1,"bbox":[366,326,202,34]}
+{"kind":"textbox","id":"sh/7qpg3ex0","slide":7,"text":"Demo agent maps prompt to createTask + JSON parameters","textPreview":"Demo agent maps prompt to createTask + JSON parameters","textChars":54,"textLines":1,"bbox":[366,376,202,76]}
+{"kind":"shape","id":"sh/i5sneloj","slide":7,"bbox":[592,355,50,0]}
+{"kind":"shape","id":"sh/p4r65wju","slide":7,"bbox":[642,230,250,250]}
+{"kind":"textbox","id":"sh/wjudg7ad","slide":7,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[666,250,70,62]}
+{"kind":"textbox","id":"sh/7y1kre1w","slide":7,"text":"Invoke","textPreview":"Invoke","textChars":6,"textLines":1,"bbox":[666,326,202,34]}
+{"kind":"textbox","id":"sh/ed8v6psf","slide":7,"text":"FlutterAppFunctions.instance.invoke hits the same registry","textPreview":"FlutterAppFunctions.instance.invoke hits the same registry","textChars":58,"textLines":1,"bbox":[666,376,202,76]}
+{"kind":"shape","id":"sh/p8nqxs72","slide":7,"bbox":[892,355,50,0]}
+{"kind":"shape","id":"sh/0nuxc3yl","slide":7,"bbox":[942,230,250,250]}
+{"kind":"textbox","id":"sh/wval87ed","slide":7,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[966,250,70,62]}
+{"kind":"textbox","id":"sh/pg3ex0nu","slide":7,"text":"Update UI","textPreview":"Update UI","textChars":9,"textLines":1,"bbox":[966,326,202,34]}
+{"kind":"textbox","id":"sh/epkzupwb","slide":7,"text":"Demo store mutates, logs result, visible app state rebuilds","textPreview":"Demo store mutates, logs result, visible app state rebuilds","textChars":59,"textLines":1,"bbox":[966,376,202,76]}
+{"kind":"textbox","id":"sh/7adsji5s","slide":7,"text":"Example app registers: createTask, addItemsToShoppingList, completeTask, summarizeToday.","textPreview":"Example app registers: createTask, addItemsToShoppingList, completeTask, summarizeToday.","textChars":88,"textLines":1,"bbox":[64,564,990,34]}
+{"kind":"textbox","id":"sh/w7mp0bi9","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1184,660,54,24]}
+{"kind":"notes","id":"nt/keqj46","slide":7,"text":""}
+{"kind":"slide","id":"sl/acvgvk","slide":8,"title":"FLUTTERCON PROJECT SHOWCASE","textShapes":6}
+{"kind":"textbox","id":"sh/udg7adsj","slide":8,"text":"FLUTTERCON PROJECT SHOWCASE","textPreview":"FLUTTERCON PROJECT SHOWCASE","textChars":27,"textLines":1,"bbox":[42,34,640,28]}
+{"kind":"textbox","id":"sh/54zidony","slide":8,"text":"Reliability comes from matching Android semantics","textPreview":"Reliability comes from matching Android semantics","textChars":49,"textLines":1,"bbox":[42,76,960,74]}
+{"kind":"shape","id":"sh/cj6tovah","slide":8,"bbox":[42,160,1196,1]}
+{"kind":"shape","id":"sh/upwb2hwf","slide":8,"bbox":[710,238,10,10]}
+{"kind":"textbox","id":"sh/5gbq1ory","slide":8,"text":"JSON is the cross-language contract because current KSP restrictions prevent AppFunctionData as a direct @AppFunction parameter.","textPreview":"JSON is the cross-language contract because current KSP restrictions prevent AppFunctionData as a direct @AppFunction parameter.","textChars":128,"textLines":1,"bbox":[734,230,442,82]}
+{"kind":"shape","id":"sh/cvixczed","slide":8,"bbox":[710,324,10,10]}
+{"kind":"textbox","id":"sh/jm1cfa9w","slide":8,"text":"The Dart method-channel path wraps typed errors as PlatformException codes.","textPreview":"The Dart method-channel path wraps typed errors as PlatformException codes.","textChars":75,"textLines":1,"bbox":[734,316,442,82]}
+{"kind":"shape","id":"sh/u18jqh0f","slide":8,"bbox":[710,410,10,10]}
+{"kind":"textbox","id":"sh/w3m94fu1","slide":8,"text":"The Kotlin bridge maps those codes back to AndroidX AppFunction*Exception classes.","textPreview":"The Kotlin bridge maps those codes back to AndroidX AppFunction*Exception classes.","textChars":82,"textLines":1,"bbox":[734,402,442,82]}
+{"kind":"textbox","id":"sh/loj2t83i","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1184,660,54,24]}
+{"kind":"table","id":"tb/6xkf6dcb","slide":8,"name":"","rows":6,"cols":2,"preview":"Dart exception | Android mapping","bbox":[64,220,560,270]}
+{"kind":"notes","id":"nt/acvgvk","slide":8,"text":""}
+{"kind":"slide","id":"sl/77oshp","slide":9,"title":"FLUTTERCON PROJECT SHOWCASE","textShapes":11}
+{"kind":"textbox","id":"sh/qtcj6tov","slide":9,"text":"FLUTTERCON PROJECT SHOWCASE","textPreview":"FLUTTERCON PROJECT SHOWCASE","textChars":27,"textLines":1,"bbox":[42,34,640,28]}
+{"kind":"textbox","id":"sh/1gvy90je","slide":9,"text":"Takeaway for Flutter developers","textPreview":"Takeaway for Flutter developers","textChars":31,"textLines":1,"bbox":[42,76,960,74]}
+{"kind":"shape","id":"sh/8z25kb6x","slide":9,"bbox":[42,160,1196,1]}
+{"kind":"textbox","id":"sh/fmlkjm1c","slide":9,"text":"On-device agents become much more useful when Flutter apps expose real app capabilities, not just screens.","textPreview":"On-device agents become much more useful when Flutter apps expose real app capabilities, not just screens.","textChars":106,"textLines":1,"bbox":[42,224,840,112]}
+{"kind":"shape","id":"sh/q1orytsv","slide":9,"bbox":[42,414,360,112]}
+{"kind":"textbox","id":"sh/xs72x4na","slide":9,"text":"Write in Dart","textPreview":"Write in Dart","textChars":13,"textLines":1,"bbox":[68,438,300,30]}
+{"kind":"textbox","id":"sh/87ed8bat","slide":9,"text":"Keep product logic where the app already lives.","textPreview":"Keep product logic where the app already lives.","textChars":47,"textLines":1,"bbox":[68,480,294,34]}
+{"kind":"shape","id":"sh/fyxobm58","slide":9,"bbox":[456,414,360,112]}
+{"kind":"textbox","id":"sh/qd4vmtwr","slide":9,"text":"Bridge once","textPreview":"Bridge once","textChars":11,"textLines":1,"bbox":[482,438,300,30]}
+{"kind":"textbox","id":"sh/sfil0rqd","slide":9,"text":"Use one Android App Function dispatcher.","textPreview":"Use one Android App Function dispatcher.","textChars":40,"textLines":1,"bbox":[482,480,294,34]}
+{"kind":"shape","id":"sh/h0fepkzu","slide":9,"bbox":[870,414,360,112]}
+{"kind":"textbox","id":"sh/a9w3m94f","slide":9,"text":"Demo live","textPreview":"Demo live","textChars":9,"textLines":1,"bbox":[896,438,300,30]}
+{"kind":"textbox","id":"sh/zupwb2hw","slide":9,"text":"Prompt -> function id -> JSON -> visible UI state.","textPreview":"Prompt -> function id -> JSON -> visible UI state.","textChars":50,"textLines":1,"bbox":[896,480,294,34]}
+{"kind":"textbox","id":"sh/orytsvu9","slide":9,"text":"Repository: github.com/mohitkoley/flutter_app_functions","textPreview":"Repository: github.com/mohitkoley/flutter_app_functions","textChars":55,"textLines":1,"bbox":[42,628,740,30]}
+{"kind":"textbox","id":"sh/hcrmhk3q","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1184,660,54,24]}
+{"kind":"notes","id":"nt/77oshp","slide":9,"text":""}
