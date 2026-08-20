@@ -80,9 +80,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.3.20")
     testImplementation("org.mockito:mockito-core:5.0.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    implementation "androidx.appfunctions:appfunctions:1.0.0-alpha09"
-    implementation "androidx.appfunctions:appfunctions-service:1.0.0-alpha09"
-    ksp "androidx.appfunctions:appfunctions-compiler:1.0.0-alpha09"
+    implementation "androidx.appfunctions:appfunctions:1.0.0-alpha10"
+    implementation "androidx.appfunctions:appfunctions-service:1.0.0-alpha10"
+    ksp "androidx.appfunctions:appfunctions-compiler:1.0.0-alpha10"
 
     if (flutterSdkPath != null) {
         compileOnly(files("$flutterSdkPath/bin/cache/artifacts/engine/android-x64/flutter.jar"))

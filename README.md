@@ -18,7 +18,7 @@ verbatim.
 | | |
 | --- | --- |
 | Android only | Minimum SDK 24, compile SDK 36 |
-| AndroidX `appfunctions` | `1.0.0-alpha09` |
+| AndroidX `appfunctions` | `1.0.0-alpha10` |
 | Flutter | Flutter 3.3.0+ with Dart 3.12.0+ |
 | Latest release | See the pub.dev badge above |
 <!-- /VERSIONS -->
@@ -74,7 +74,7 @@ the result. The Kotlin side never contains user logic — it is a fixed
 dispatcher. All parameters, return values, and errors flow over a JSON wire
 format (KSP forbids `AppFunctionData` as a parameter type on
 `@AppFunction`, so JSON strings are the only cross-language contract that
-works on `androidx.appfunctions:1.0.0-alpha09`):
+works on `androidx.appfunctions:1.0.0-alpha10`):
 
 ```
 Gemini agent
@@ -422,7 +422,7 @@ cd example/android
 The Kotlin unit tests cover the plugin's lifecycle (`getPlatformVersion`).
 The suspend `executeAppFunction` entry point is covered indirectly by
 the integration test because it requires a real Flutter engine channel,
-and the alpha09 `AppFunction*Exception` subclasses cannot be
+and the alpha10 `AppFunction*Exception` subclasses cannot be
 constructed in plain JVM tests (their constructors touch
 `android.os.Bundle.EMPTY`, which is only initialised inside a real
 Android runtime).
@@ -451,7 +451,7 @@ exercising the method channel from the host side.
   your function definitions between an Android build and an iOS / Web
   build of the same codebase, gate the `register` call on
   `defaultTargetPlatform == TargetPlatform.android`.
-* The plugin targets `androidx.appfunctions:1.0.0-alpha09`, which is an
+* The plugin targets `androidx.appfunctions:1.0.0-alpha10`, which is an
   alpha release of the AppFunctions library.
 * Nested object and array-of-object parameters are not supported — only
   the scalar types listed above. The `AppFunctionData` wire format

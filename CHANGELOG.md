@@ -1,3 +1,8 @@
+## 0.0.10
+
+* Upgraded AndroidX AppFunctions dependencies (`appfunctions`,
+  `appfunctions-service`, `appfunctions-compiler`) to `1.0.0-alpha10`.
+
 ## 0.0.9
 
 * I have updated alpha 0.0.9 in kotlin.
