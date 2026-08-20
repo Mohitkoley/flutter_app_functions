@@ -21,6 +21,26 @@ still 36, so `compileSdk = 37` must be set explicitly.
   Flutter SDKs no longer ship. The build now falls back to the
   `io.flutter:flutter_embedding_debug` Maven artifact when the legacy jar
   is absent.
+* **Fixed the app being uninvocable by any agent.** The plugin's
+  `AndroidManifest.xml` declared a service named
+  `androidx.appfunctions.internal.AppFunctionTileService` under the action
+  `androidx.appfunctions.action.APP_FUNCTION_SERVICE`. That class exists in
+  neither the alpha09 nor the alpha10 artifacts, and that action is not the
+  one the platform binds on, so the declaration could only ever have raised
+  `ClassNotFoundException`. Through alpha09 this went unnoticed because the
+  `appfunctions-service` library merged a working `PlatformAppFunctionService`
+  into every app; with that artifact gone, no valid service remained. The
+  plugin now declares `PlatformAppFunctionService` and
+  `ExtensionAppFunctionService` itself, with the correct
+  `android.app.appfunctions.AppFunctionService` action and the
+  `app_functions.xml` / `app_functions_v2.xml` / schema properties.
+* Fixed `AppFunctionFunctionNotFoundException` being constructed with a prose
+  sentence where its constructor expects a bare function id, which left
+  `functionId` holding a full sentence and produced the doubled message
+  "App function not registered: No app function registered with id: x".
+* Raised the declared Flutter constraint from `>=3.3.0` to `>=3.44.0`. The
+  Dart constraint has been `^3.12.0`, and Dart 3.12 first shipped in Flutter
+  3.44, so the old pair was unsatisfiable as written.
 * The `appfunctions` dependency is now exposed as `api` rather than
   `implementation`. `FlutterAppFunctionsApplication` implements
   `AppFunctionConfiguration.Provider` as part of its public API, so consumer

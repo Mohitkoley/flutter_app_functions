@@ -1,13 +1,58 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions">
 
     <application>
+        <!--
+          Up to androidx.appfunctions 1.0.0-alpha09 these services were declared
+          by the appfunctions-service library's own manifest and merged in
+          automatically. That artifact is gone in alpha10 and the main
+          appfunctions manifest no longer declares them, so the app exposing
+          the functions must declare them itself. Without this, nothing binds
+          to the app and no agent can invoke any function.
+        -->
         <service
-            android:name="androidx.appfunctions.internal.AppFunctionTileService"
+            android:name="androidx.appfunctions.PlatformAppFunctionService"
+            android:enabled="@bool/enablePlatformAppFunctionService"
+            android:exported="true"
             android:permission="android.permission.BIND_APP_FUNCTION_SERVICE"
-            android:exported="true">
+            tools:targetApi="36">
+
+            <!-- XML file property for the legacy AppSearch indexer. -->
+            <property
+                android:name="android.app.appfunctions"
+                android:value="app_functions.xml" />
+            <!-- XSD and XML file properties for the dynamic AppSearch indexer. -->
+            <property
+                android:name="android.app.appfunctions.schema"
+                android:value="app_functions_schema.xsd" />
+            <property
+                android:name="android.app.appfunctions.v2"
+                android:value="app_functions_v2.xml" />
+
             <intent-filter>
-                <action android:name="androidx.appfunctions.action.APP_FUNCTION_SERVICE" />
+                <action android:name="android.app.appfunctions.AppFunctionService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="androidx.appfunctions.ExtensionAppFunctionService"
+            android:enabled="@bool/enableExtensionAppFunctionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_APP_FUNCTION_SERVICE">
+
+            <property
+                android:name="android.app.appfunctions"
+                android:value="app_functions.xml" />
+            <property
+                android:name="android.app.appfunctions.schema"
+                android:value="app_functions_schema.xsd" />
+            <property
+                android:name="android.app.appfunctions.v2"
+                android:value="app_functions_v2.xml" />
+
+            <intent-filter>
+                <action android:name="android.app.appfunctions.AppFunctionService" />
             </intent-filter>
         </service>
 

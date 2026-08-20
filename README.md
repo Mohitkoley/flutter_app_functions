@@ -20,7 +20,7 @@ verbatim.
 | Android only | Minimum SDK 24, compile SDK 37 |
 | AndroidX `appfunctions` | `1.0.0-alpha10` |
 | Android Gradle plugin | `9.1.0` or higher |
-| Flutter | Flutter 3.3.0+ with Dart 3.12.0+ |
+| Flutter | Flutter 3.44.0+ with Dart 3.12.0+ |
 | Latest release | See the pub.dev badge above |
 <!-- /VERSIONS -->
 
@@ -121,10 +121,16 @@ dependencies:
 ```
 
 The plugin's Android manifest already contributes the
-`appfunctions:APP_FUNCTION_SERVICE` permission, the
-`<service>` declaration, and the `res/xml/app_metadata.xml` entry. The host
-app's manifest only needs to opt in (see
-[Wiring up the Android host app](#wiring-up-the-android-host-app)).
+`PlatformAppFunctionService` and `ExtensionAppFunctionService` declarations
+(each guarded by `android.permission.BIND_APP_FUNCTION_SERVICE` and bound
+through the `android.app.appfunctions.AppFunctionService` action) plus the
+`res/xml/app_metadata.xml` entry. The host app's manifest only needs to opt
+in (see [Wiring up the Android host app](#wiring-up-the-android-host-app)).
+
+Up to alpha09 these `<service>` entries came from the `appfunctions-service`
+library's own manifest and were merged in automatically. That artifact no
+longer exists, and alpha10's `appfunctions` manifest does not declare them,
+so the plugin now declares them itself.
 
 The package applies the KSP Gradle plugin with an explicit version in its own
 Android module. Host apps do not need to declare `com.google.devtools.ksp`

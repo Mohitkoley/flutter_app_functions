@@ -190,6 +190,22 @@ void main() {
         throwsA(isA<AppFunctionFunctionNotFoundException>()),
       );
     });
+
+    test('AppFunctionNotFound carries the bare id, not a prose message',
+        () async {
+      await expectLater(
+        () => FlutterAppFunctions.instance.invoke('notRegistered'),
+        throwsA(
+          isA<AppFunctionFunctionNotFoundException>()
+              .having((e) => e.functionId, 'functionId', 'notRegistered')
+              .having(
+                (e) => e.message,
+                'message',
+                'App function not registered: notRegistered',
+              ),
+        ),
+      );
+    });
   });
 
   group('handler-thrown exceptions', () {

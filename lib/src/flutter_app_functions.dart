@@ -64,9 +64,10 @@ void _assertAndroid() {
 /// }
 /// ```
 ///
-/// The plugin's `AndroidManifest.xml` already declares the
-/// `appfunctions:APP_FUNCTION_SERVICE` permission, the `appfn:description`
-/// attributes, and the `<property android:name="android.app.appfunctions.app_metadata">`
+/// The plugin's `AndroidManifest.xml` declares the
+/// `PlatformAppFunctionService` / `ExtensionAppFunctionService` entries
+/// (guarded by `android.permission.BIND_APP_FUNCTION_SERVICE`) and the
+/// `<property android:name="android.app.appfunctions.app_metadata">`
 /// entry that the Android AppFunctions system reads at startup. To plug
 /// the bridge into a host Android app, extend
 /// [FlutterAppFunctionsApplication] (or implement
@@ -253,9 +254,7 @@ class FlutterAppFunctions {
   ) async {
     final definition = _registry.find(id);
     if (definition == null) {
-      throw AppFunctionFunctionNotFoundException(
-        'No app function registered with id: $id',
-      );
+      throw AppFunctionFunctionNotFoundException(id);
     }
     final parameters =
         AppFunctionRegistry.validateAndCoerce(definition, rawParameters);

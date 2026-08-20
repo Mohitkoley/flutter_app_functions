@@ -11,8 +11,11 @@ topics:
   - gemini
 
 environment:
+  # Dart 3.12 first shipped with Flutter 3.44, so these two must move
+  # together. The Android side needs compileSdk 37 / AGP 9.1 / Gradle 9.3.1
+  # anyway, which no older Flutter toolchain provides.
   sdk: ^3.12.0
-  flutter: '>=3.3.0'
+  flutter: '>=3.44.0'
 
 dependencies:
   flutter:
