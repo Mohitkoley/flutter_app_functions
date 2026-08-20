@@ -9,8 +9,9 @@ Android App Functions runtime (Gemini and friends) can discover, parameterise,
 invoke, and react to typed errors from those functions — all without leaving
 your existing Flutter app.
 
-The plugin speaks the same wire protocol, the same `AppFunction*Exception`
-types, and the same manifest shape as the official Android library, so the
+The plugin speaks the same wire protocol and the same
+`AppFunction*Exception` types as the official Android library, and declares
+the same kind of `AppFunctionService` the library expects, so the
 documentation at `developer.android.com/ai/appfunctions` applies almost
 verbatim.
 
@@ -82,8 +83,13 @@ works on `androidx.appfunctions:1.0.0-alpha10`):
 Gemini agent
     ↓ "call createTask(title='Buy milk')"
 Android AppFunctionManager
-    ↓ looks up @AppFunction executeAppFunction
-AppFunctionsBridge.executeAppFunction()           ← Kotlin (1 function, fixed)
+    ↓ binds the service declared for the
+      android.app.appfunctions.AppFunctionService action
+FlutterAppFunctionsService.onExecuteFunction()     ← Kotlin (KSP-generated)
+    ↓ dispatches on the function id
+BaseFlutterAppFunctionsService.executeAppFunction() ← Kotlin (the @AppFunction)
+    ↓ delegates
+AppFunctionsBridge.executeAppFunction()            ← Kotlin (1 function, fixed)
     ↓ MethodChannel.invokeMethod("invokeAppFunction", {functionId, parametersJson})
 FlutterAppFunctions._onMethodCall()                ← Dart
     ↓ JSON-decode parameters, look up registry
@@ -95,6 +101,9 @@ AppFunctionsBridge.executeAppFunction() returns
     ↓
 Android AppFunctionManager returns to agent
 ```
+
+All three Kotlin frames are plugin code — generated or fixed — and you never
+edit them. Your code starts at the handler.
 
 Because the handler is plain Dart, your UI state, your state-management
 objects, and your `ChangeNotifier`s / Riverpod providers / Bloc stores are
@@ -415,10 +424,24 @@ adb shell cmd app_function list-app-functions
 
 # Invoke a function by id:
 adb shell cmd app_function execute-app-function \
-    --uri app_function://com.mohitkoley.flutter_app_functions/executeAppFunction \
+    --uri app_function://<your.app.applicationId>/com.mohitkoley.flutter_app_functions.BaseFlutterAppFunctionsService%23executeAppFunction \
     --function-id createTask \
     --params '{"title":"Buy milk","notes":"2L semi-skimmed"}'
 ```
+
+Two things that are easy to get wrong here:
+
+* The package in the URI is **your host app's `applicationId`** — the app that
+  bundles the plugin — not the plugin's Kotlin namespace.
+* The AppFunctions id is the plugin's single dispatch entry point,
+  `…BaseFlutterAppFunctionsService#executeAppFunction` (the `#` needs escaping
+  in a URI). Your own function id — `createTask` — is what goes in
+  `--function-id`, because the plugin dispatches on it in Dart.
+
+The shell surface is experimental and has changed between alpha releases, so
+treat the exact flags as a starting point and confirm with
+`adb shell cmd app_function help`. Both commands need a device on Android 16
+or newer.
 
 The agent (e.g. Gemini) sees the function descriptions and parameters as
 ordinary Android AppFunctions and calls them through the standard
@@ -443,16 +466,21 @@ channel. The method channel is mocked via
 
 ```sh
 cd example/android
-./gradlew testDebugUnitTest
+./gradlew :flutter_app_functions:testDebugUnitTest
 ```
 
-The Kotlin unit tests cover the plugin's lifecycle (`getPlatformVersion`).
-The suspend `executeAppFunction` entry point is covered indirectly by
-the integration test because it requires a real Flutter engine channel,
-and the alpha10 `AppFunction*Exception` subclasses cannot be
-constructed in plain JVM tests (their constructors touch
-`android.os.Bundle.EMPTY`, which is only initialised inside a real
-Android runtime).
+Two suites run:
+
+* `FlutterAppFunctionsPluginTest` — the plugin's lifecycle
+  (`getPlatformVersion`).
+* `AppFunctionsBridgeDispatcherTest` — the suspend `executeAppFunction`
+  dispatch, driven through a fake `BinaryMessenger` so no real Flutter engine
+  is needed.
+
+The typed error mapping in `AppFunctionsBridge.mapErrorCodeToException` is
+*not* covered here: the `AppFunction*Exception` constructors touch
+`android.os.Bundle.EMPTY`, which is only initialised inside a real Android
+runtime, so it needs an instrumentation test rather than a plain JVM one.
 
 ### Integration
 
@@ -478,8 +506,26 @@ exercising the method channel from the host side.
   your function definitions between an Android build and an iOS / Web
   build of the same codebase, gate the `register` call on
   `defaultTargetPlatform == TargetPlatform.android`.
+* **Functions are only discoverable on Android 16 (API 36) or newer.** The
+  plugin's `minSdk` is 24 so your app still installs and runs on older
+  devices, but the generated `FlutterAppFunctionsService` is disabled below
+  API 36 (via a `values-v36` resource) because the platform
+  `AppFunctionService` it extends does not exist there. Registering functions
+  in Dart on such a device is harmless — nothing will ever call them.
+* **Being invoked by a real agent is gated by Google, not by this plugin.**
+  Callers need the `android.permission.EXECUTE_APP_FUNCTIONS` permission, and
+  per Google's documentation AppFunctions is *"in an experimental preview"*
+  with Gemini integration *"in a private preview with trusted testers"* and
+  *"only a limited number of apps and system agents"* able to access the full
+  pipeline. Exposing functions works today; having the system Gemini call
+  them in production requires onboarding through Google's Early Access
+  Program. If you want a working agent loop before then, host the model
+  yourself and route its tool calls into the same Dart handlers.
 * The plugin targets `androidx.appfunctions:1.0.0-alpha10`, which is an
-  alpha release of the AppFunctions library.
+  alpha release of the AppFunctions library. The API has broken between alpha
+  releases (alpha10 dropped the `appfunctions-service` artifact and moved
+  `@AppFunction` onto `@AppFunctionServiceEntryPoint`), so expect further
+  churn.
 * Nested object and array-of-object parameters are not supported — only
   the scalar types listed above. The `AppFunctionData` wire format
   supports richer shapes; the plugin exposes the common subset to keep
