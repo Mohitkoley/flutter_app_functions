@@ -1,7 +1,33 @@
 ## 0.0.10
 
-* Upgraded AndroidX AppFunctions dependencies (`appfunctions`,
-  `appfunctions-service`, `appfunctions-compiler`) to `1.0.0-alpha10`.
+**Breaking:** host apps must now build with `compileSdk 37` (plus
+`compileSdkMinor`), Android Gradle plugin `9.1.0`+, and Gradle `9.3.1`+. These floors are imposed by
+`androidx.appfunctions:1.0.0-alpha10` itself; builds below them fail during
+the AAR metadata check. Flutter's default `flutter.compileSdkVersion` is
+still 36, so `compileSdk = 37` must be set explicitly.
+
+* Upgraded AndroidX AppFunctions to `1.0.0-alpha10`.
+* Dropped the `appfunctions-service` dependency. That artifact stopped being
+  published after alpha09; in alpha10 its contents moved into the main
+  `appfunctions` artifact, so imports of `androidx.appfunctions.service.*`
+  are now `androidx.appfunctions.*`.
+* Fixed the plugin's `android/build.gradle.kts` using Groovy dependency
+  syntax (`implementation "..."`) inside a Kotlin DSL file, which failed
+  script compilation with "Unexpected tokens" before any dependency was
+  resolved. This bug was present in every previous release and prevented
+  the plugin from building in consumer apps.
+* Fixed the stale `compileOnly` reference to
+  `bin/cache/artifacts/engine/android-x64/flutter.jar`, a path modern
+  Flutter SDKs no longer ship. The build now falls back to the
+  `io.flutter:flutter_embedding_debug` Maven artifact when the legacy jar
+  is absent.
+* The `appfunctions` dependency is now exposed as `api` rather than
+  `implementation`. `FlutterAppFunctionsApplication` implements
+  `AppFunctionConfiguration.Provider` as part of its public API, so consumer
+  modules could not compile a subclass of it without the type on their
+  classpath.
+* README: documented the new toolchain floor, and `update_readme_versions`
+  now keeps the Android Gradle plugin version in the requirements table.
 
 ## 0.0.9
 

@@ -10,7 +10,7 @@ import androidx.appfunctions.AppFunctionFunctionNotFoundException
 import androidx.appfunctions.AppFunctionInvalidArgumentException
 import androidx.appfunctions.AppFunctionNotSupportedException
 import androidx.appfunctions.AppFunctionPermissionRequiredException
-import androidx.appfunctions.service.AppFunction
+import androidx.appfunctions.AppFunction
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers

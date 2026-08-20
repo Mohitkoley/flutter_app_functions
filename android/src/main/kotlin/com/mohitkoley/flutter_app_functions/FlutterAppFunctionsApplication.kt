@@ -1,7 +1,7 @@
 package com.mohitkoley.flutter_app_functions
 
 import android.app.Application
-import androidx.appfunctions.service.AppFunctionConfiguration
+import androidx.appfunctions.AppFunctionConfiguration
 
 /**
  * Base [Application] class that registers the plugin's [AppFunctionsBridge]

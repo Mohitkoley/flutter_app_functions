@@ -17,8 +17,9 @@ verbatim.
 <!-- VERSIONS -->
 | | |
 | --- | --- |
-| Android only | Minimum SDK 24, compile SDK 36 |
+| Android only | Minimum SDK 24, compile SDK 37 |
 | AndroidX `appfunctions` | `1.0.0-alpha10` |
+| Android Gradle plugin | `9.1.0` or higher |
 | Flutter | Flutter 3.3.0+ with Dart 3.12.0+ |
 | Latest release | See the pub.dev badge above |
 <!-- /VERSIONS -->
@@ -361,6 +362,35 @@ element. This Kotlin class is required because
 and registers the `AppFunctionsBridge` with the AppFunctions runtime.
 
 ### Gradle
+
+`androidx.appfunctions:1.0.0-alpha10` raises the toolchain floor for every
+host app, not just this plugin. Your app must build with **at least**:
+
+| | |
+| --- | --- |
+| `compileSdk` | `37` (plus `compileSdkMinor`) |
+| Android Gradle plugin | `9.1.0` |
+| Gradle | `9.3.1` (required by AGP 9.1.0) |
+
+If any of these is lower, the build fails while checking AAR metadata with
+`Dependency 'androidx.appfunctions:appfunctions:1.0.0-alpha10' requires ...`
+before your code is compiled.
+
+Two things to watch for in your `android/app/build.gradle.kts`:
+
+```kotlin
+android {
+    compileSdk = 37
+    compileSdkMinor = 0
+}
+```
+
+* Flutter's default `flutter.compileSdkVersion` is still 36, so `compileSdk`
+  must be set explicitly rather than left to the Flutter Gradle plugin.
+* API 37 ships only as minor-versioned platforms (`android-37.0`,
+  `android-37.1`). Without `compileSdkMinor`, AGP looks for a plain
+  `android-37` target and fails with `Failed to find target with hash string
+  'android-37'`. `compileSdkMinor` requires AGP 9.1.0 or newer.
 
 If your app's own modules declare their own `@AppFunction`s, add the
 following to your **app-level** `android/app/build.gradle.kts` so the KSP

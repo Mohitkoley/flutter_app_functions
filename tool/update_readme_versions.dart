@@ -30,6 +30,10 @@ void main() {
     gradle,
     r'androidx\.appfunctions:appfunctions:([^")\s]+)',
   );
+  final agpVersion = _extract(
+    gradle,
+    r'com\.android\.tools\.build:gradle:([^")\s]+)',
+  );
 
   // pubspec constraints – e.g. ">=3.3.0" or "^3.12.0"
   final sdkConstraintRaw = _extract(
@@ -53,6 +57,7 @@ void main() {
 | --- | --- |
 | Android only | Minimum SDK $minSdk, compile SDK $compileSdk |
 | AndroidX `appfunctions` | `$appfunctionsVersion` |
+| Android Gradle plugin | `$agpVersion` or higher |
 | Flutter | $flutterDisplay with $dartDisplay |
 | Latest release | See the pub.dev badge above |'''
           .trim();
