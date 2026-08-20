@@ -1,4 +1,4 @@
-## 0.0.10
+## 0.1.0
 
 **Breaking, toolchain:** host apps must now build with `compileSdk 37` (plus
 `compileSdkMinor`), Android Gradle plugin `9.1.0`+, and Gradle `9.3.1`+. These
