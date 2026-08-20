@@ -1,12 +1,41 @@
 ## 0.0.10
 
-**Breaking:** host apps must now build with `compileSdk 37` (plus
-`compileSdkMinor`), Android Gradle plugin `9.1.0`+, and Gradle `9.3.1`+. These floors are imposed by
-`androidx.appfunctions:1.0.0-alpha10` itself; builds below them fail during
-the AAR metadata check. Flutter's default `flutter.compileSdkVersion` is
-still 36, so `compileSdk = 37` must be set explicitly.
+**Breaking, toolchain:** host apps must now build with `compileSdk 37` (plus
+`compileSdkMinor`), Android Gradle plugin `9.1.0`+, and Gradle `9.3.1`+. These
+floors are imposed by `androidx.appfunctions:1.0.0-alpha10` itself; builds
+below them fail during the AAR metadata check. Flutter's default
+`flutter.compileSdkVersion` is still 36, so `compileSdk = 37` must be set
+explicitly.
+
+**Breaking, integration:** host apps no longer need any Kotlin. Delete your
+`Application` subclass and remove `android:name` from `<application>`. See the
+`@AppFunctionServiceEntryPoint` entry below.
 
 * Upgraded AndroidX AppFunctions to `1.0.0-alpha10`.
+* **Migrated to the `@AppFunctionServiceEntryPoint` pattern.** alpha10
+  requires every `@AppFunction` to be declared inside an abstract
+  `AppFunctionService` carrying that annotation, and documents
+  `AppFunctionConfiguration` — which the old `FlutterAppFunctionsApplication`
+  relied on — as slated for removal. The plugin's `@AppFunction` now lives on
+  `BaseFlutterAppFunctionsService`, the KSP processor generates the concrete
+  `FlutterAppFunctionsService` plus its `flutter_app_functions.xml` metadata
+  document, and the plugin's manifest declares that generated service
+  (enabled only on API 36+ through a `values-v36` resource).
+
+  Two consequences for host apps:
+
+  * **No Kotlin is required any more.** Delete your `Application` subclass and
+    remove `android:name` from `<application>`.
+    `FlutterAppFunctionsApplication` is retained as a deprecated no-op so
+    existing apps still compile.
+  * **The dispatch function id changed**, since it derives from the declaring
+    class: `AppFunctionsBridge#executeAppFunction` becomes
+    `BaseFlutterAppFunctionsService#executeAppFunction`. This identifies the
+    plugin's single entry point, not your Dart functions, so it only matters
+    if you referenced it directly.
+
+  `AppFunctionsBridge` keeps the dispatch and error-mapping logic (and its
+  unit tests) — it is simply no longer the annotated declaration site.
 * Dropped the `appfunctions-service` dependency. That artifact stopped being
   published after alpha09; in alpha10 its contents moved into the main
   `appfunctions` artifact, so imports of `androidx.appfunctions.service.*`

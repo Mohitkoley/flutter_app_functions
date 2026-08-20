@@ -53,12 +53,13 @@ verbatim.
   register on the Dart side.
 * **Handler** — the Dart async function that runs when the agent calls the
   function.
-* **Bridge** — the Kotlin side of the plugin. It exposes a single
-  `@AppFunction` to the Android App Functions runtime and dispatches calls
-  to the Dart registry.
-* **Base application** — `FlutterAppFunctionsApplication`, the
-  `Application` subclass your host app extends to register the bridge with
-  the AppFunctions system.
+* **Bridge** — the Kotlin side of the plugin. It dispatches calls from the
+  Android App Functions runtime to the Dart registry.
+* **Entry point** — `BaseFlutterAppFunctionsService`, the abstract
+  `AppFunctionService` annotated with `@AppFunctionServiceEntryPoint` that
+  carries the plugin's single `@AppFunction`. The KSP processor generates the
+  concrete `FlutterAppFunctionsService` from it, and the plugin's manifest
+  declares that generated service. Host apps do not write any Kotlin.
 
 The plugin lives at one level of indirection on purpose: you write the
 function **once** in Dart, and the Kotlin side dynamically forwards every
@@ -121,16 +122,16 @@ dependencies:
 ```
 
 The plugin's Android manifest already contributes the
-`PlatformAppFunctionService` and `ExtensionAppFunctionService` declarations
-(each guarded by `android.permission.BIND_APP_FUNCTION_SERVICE` and bound
-through the `android.app.appfunctions.AppFunctionService` action) plus the
-`res/xml/app_metadata.xml` entry. The host app's manifest only needs to opt
-in (see [Wiring up the Android host app](#wiring-up-the-android-host-app)).
+`FlutterAppFunctionsService` declaration (guarded by
+`android.permission.BIND_APP_FUNCTION_SERVICE`, bound through the
+`android.app.appfunctions.AppFunctionService` action, and enabled only on
+API 36+ via a `values-v36` resource) plus the `res/xml/app_metadata.xml`
+entry. The host app's manifest only needs to opt in (see
+[Wiring up the Android host app](#wiring-up-the-android-host-app)).
 
-Up to alpha09 these `<service>` entries came from the `appfunctions-service`
-library's own manifest and were merged in automatically. That artifact no
-longer exists, and alpha10's `appfunctions` manifest does not declare them,
-so the plugin now declares them itself.
+Up to alpha09 the `<service>` entry came from the `appfunctions-service`
+library's own manifest and was merged in automatically. That artifact no
+longer exists, so the plugin declares its own generated service instead.
 
 The package applies the KSP Gradle plugin with an explicit version in its own
 Android module. Host apps do not need to declare `com.google.devtools.ksp`
@@ -177,7 +178,6 @@ In `android/app/src/main/AndroidManifest.xml`:
     xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions">
 
     <application
-        android:name=".MyApplication"
         appfn:description="@string/appfn_description"
         appfn:displayDescription="@string/appfn_display_description">
         ...
@@ -185,21 +185,9 @@ In `android/app/src/main/AndroidManifest.xml`:
 </manifest>
 ```
 
-Create an app-specific `Application` class in your Android app. For example,
-in `android/app/src/main/kotlin/com/example/myapp/MyApplication.kt`:
-
-```kotlin
-package com.example.myapp
-
-import com.mohitkoley.flutter_app_functions.FlutterAppFunctionsApplication
-
-class MyApplication : FlutterAppFunctionsApplication()
-```
-
-Use your app's real Kotlin package name and keep this file in your app module.
-This class is required: the plugin cannot register App Functions with Android
-unless the host app points its `<application android:name>` at an
-`Application` class that extends `FlutterAppFunctionsApplication`.
+That is the whole Android-side setup — no `Application` subclass and no
+Kotlin in your app module. The plugin declares its own KSP-generated
+`FlutterAppFunctionsService` and Android binds to it directly.
 
 In `android/app/src/main/res/values/strings.xml`:
 
@@ -342,30 +330,33 @@ The plugin takes care of every manifest entry *inside* the
 `<application>` element, so the host app's manifest only needs to:
 
 1. Declare the `xmlns:appfn` namespace.
-2. Set `android:name=".MyApplication"` (or your equivalent) on
-   `<application>`.
-3. Provide `appfn:description` and `appfn:displayDescription` attributes
+2. Provide `appfn:description` and `appfn:displayDescription` attributes
    on `<application>`.
-4. Override the `appfn_description` / `appfn_display_description` strings
+3. Override the `appfn_description` / `appfn_display_description` strings
    in your `res/values/strings.xml` (the plugin ships sensible defaults
-   so step 4 is optional).
+   so this step is optional).
 
-Create your own app-level `Application` class and point it at
-`FlutterAppFunctionsApplication`. Do this in the host app's Android source set,
-not inside the plugin package:
+There is no step involving Kotlin. The plugin's `@AppFunction` lives on
+`BaseFlutterAppFunctionsService`, an abstract `AppFunctionService` annotated
+with `@AppFunctionServiceEntryPoint`; the appfunctions KSP processor generates
+the concrete `FlutterAppFunctionsService` and the plugin's manifest declares
+it. Android binds to that service directly.
 
-```kotlin
-package com.example.myapp
-
-import com.mohitkoley.flutter_app_functions.FlutterAppFunctionsApplication
-
-class MyApplication : FlutterAppFunctionsApplication()
-```
-
-Then set `android:name=".MyApplication"` on the host app's `<application>`
-element. This Kotlin class is required because
-`FlutterAppFunctionsApplication` implements `AppFunctionConfiguration.Provider`
-and registers the `AppFunctionsBridge` with the AppFunctions runtime.
+> **Migrating from 0.0.9 or earlier.** Previous versions required a host-app
+> `Application` subclass extending `FlutterAppFunctionsApplication`, pointed at
+> by `<application android:name>`. That is obsolete: delete the class and
+> remove the `android:name` attribute. `FlutterAppFunctionsApplication` is kept
+> as a deprecated no-op so existing apps still compile.
+>
+> The function id also changed, since it is derived from the declaring class:
+>
+> ```
+> before: com.mohitkoley.flutter_app_functions.AppFunctionsBridge#executeAppFunction
+> after:  com.mohitkoley.flutter_app_functions.BaseFlutterAppFunctionsService#executeAppFunction
+> ```
+>
+> This is the id of the plugin's single dispatch entry point, not of your own
+> Dart functions, so it only matters if you referenced it directly.
 
 ### Gradle
 

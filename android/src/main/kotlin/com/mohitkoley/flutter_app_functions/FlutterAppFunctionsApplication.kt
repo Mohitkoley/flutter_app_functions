@@ -1,30 +1,25 @@
 package com.mohitkoley.flutter_app_functions
 
 import android.app.Application
-import androidx.appfunctions.AppFunctionConfiguration
 
 /**
- * Base [Application] class that registers the plugin's [AppFunctionsBridge]
- * with the App Functions runtime.
+ * Base [Application] class that host apps used to extend in order to
+ * register the plugin's app function with the App Functions runtime.
  *
- * Extend this class from your own `Application` subclass and reference it
- * via `android:name=".YourApplication"` in your `AndroidManifest.xml`:
+ * This is no longer necessary. Since `androidx.appfunctions` 1.0.0-alpha10
+ * the plugin's `@AppFunction` lives on [BaseFlutterAppFunctionsService], and
+ * the KSP-generated `FlutterAppFunctionsService` that the plugin declares in
+ * its manifest constructs and dispatches to it directly. There is nothing
+ * left for an `Application` subclass to provide.
  *
- * ```kotlin
- * class MyApplication : FlutterAppFunctionsApplication()
- * ```
- *
- * The base class also requires the `xmlns:appfn` namespace on your
- * `<application>` element along with the `appfn:description` and
- * `appfn:displayDescription` attributes (see the README for the full
- * manifest snippet).
+ * The class is kept so existing host apps still compile. To drop it, delete
+ * your `Application` subclass and remove `android:name` from the
+ * `<application>` element of your `AndroidManifest.xml`.
  */
-abstract class FlutterAppFunctionsApplication :
-    Application(), AppFunctionConfiguration.Provider {
-    override val appFunctionConfiguration: AppFunctionConfiguration
-        get() = AppFunctionConfiguration.Builder()
-            .addEnclosingClassFactory(AppFunctionsBridge::class.java) {
-                AppFunctionsBridge()
-            }
-            .build()
-}
+@Deprecated(
+    message =
+        "No longer required. The plugin's KSP-generated FlutterAppFunctionsService " +
+            "registers the app function directly. Delete your Application subclass " +
+            "and remove android:name from <application>.",
+)
+abstract class FlutterAppFunctionsApplication : Application()

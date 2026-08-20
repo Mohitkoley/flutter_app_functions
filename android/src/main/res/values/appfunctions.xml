@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      The generated FlutterAppFunctionsService extends the platform
+      android.app.appfunctions.AppFunctionService, which only exists on
+      API 36+. The plugin's minSdk is lower, so the service is disabled by
+      default and enabled by the values-v36 override below. This mirrors how
+      the androidx appfunctions library gated its own service declarations.
+    -->
+    <bool name="enableFlutterAppFunctionsService">false</bool>
+</resources>

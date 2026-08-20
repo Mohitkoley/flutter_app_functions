@@ -64,15 +64,15 @@ void _assertAndroid() {
 /// }
 /// ```
 ///
-/// The plugin's `AndroidManifest.xml` declares the
-/// `PlatformAppFunctionService` / `ExtensionAppFunctionService` entries
-/// (guarded by `android.permission.BIND_APP_FUNCTION_SERVICE`) and the
+/// The plugin's `AndroidManifest.xml` declares the KSP-generated
+/// `FlutterAppFunctionsService` (guarded by
+/// `android.permission.BIND_APP_FUNCTION_SERVICE` and enabled only on
+/// API 36+) and the
 /// `<property android:name="android.app.appfunctions.app_metadata">`
-/// entry that the Android AppFunctions system reads at startup. To plug
-/// the bridge into a host Android app, extend
-/// [FlutterAppFunctionsApplication] (or implement
-/// `AppFunctionConfiguration.Provider` directly) and set
-/// `android:name=".MyApplication"` in the host's `AndroidManifest.xml`.
+/// entry that the Android AppFunctions system reads at startup. The host
+/// app needs no Kotlin and no `Application` subclass; its manifest only
+/// supplies the `appfn:description` / `appfn:displayDescription`
+/// attributes on `<application>`.
 class FlutterAppFunctions {
   FlutterAppFunctions._();
 

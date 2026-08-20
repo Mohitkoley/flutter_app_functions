@@ -33,17 +33,10 @@
 /// }
 /// ```
 ///
-/// Then, in your Android `Application`:
-///
-/// ```kotlin
-/// class MyApplication : FlutterAppFunctionsApplication()
-/// ```
-///
-/// and in `AndroidManifest.xml`:
+/// Then, in `AndroidManifest.xml` (no Kotlin required):
 ///
 /// ```xml
 /// <application
-///     android:name=".MyApplication"
 ///     appfn:description="@string/appfn_description"
 ///     appfn:displayDescription="@string/appfn_display_description">
 /// ```

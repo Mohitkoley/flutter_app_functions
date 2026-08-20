@@ -3,7 +3,6 @@
 
     <application
         android:label="flutter_app_functions_example"
-        android:name=".MyApplication"
         android:icon="@mipmap/ic_launcher"
         appfn:description="@string/appfn_description"
         appfn:displayDescription="@string/appfn_display_description">

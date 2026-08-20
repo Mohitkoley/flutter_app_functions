@@ -10,7 +10,6 @@ import androidx.appfunctions.AppFunctionFunctionNotFoundException
 import androidx.appfunctions.AppFunctionInvalidArgumentException
 import androidx.appfunctions.AppFunctionNotSupportedException
 import androidx.appfunctions.AppFunctionPermissionRequiredException
-import androidx.appfunctions.AppFunction
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +51,6 @@ class AppFunctionsBridge {
      * @return A JSON-encoded scalar value, array, or `null` if the target
      *   function returns `void`.
      */
-    @AppFunction(isDescribedByKDoc = true)
     suspend fun executeAppFunction(
         appFunctionContext: AppFunctionContext,
         functionId: String,
