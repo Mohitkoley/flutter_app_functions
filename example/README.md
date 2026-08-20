@@ -12,9 +12,9 @@ The app is a small productivity app. It registers Dart handlers for:
 
 Those functions mutate normal Flutter state in `DemoProductivityStore`. A real
 caller such as Gemini or another permitted Android agent discovers the
-registered AppFunctions through Android and executes the Kotlin bridge. The
-bridge forwards the call to the same Dart handlers shown in
-[`lib/main.dart`](lib/main.dart).
+registered AppFunctions through Android and binds the plugin's
+`FlutterAppFunctionsService`, which forwards the call to the same Dart handlers
+shown in [`lib/main.dart`](lib/main.dart).
 
 ## Important model
 
@@ -42,29 +42,20 @@ registered Dart handler that the Android bridge calls in production.
 1. Register app functions early in `main()`:
 
 ```dart
-final store = DemoProductivityStore();
-registerProductivityAppFunctions(store);
-runApp(MyApp(store: store));
+final demoStore = DemoProductivityStore();
+registerProductivityAppFunctions(demoStore);
+runApp(MyApp(store: demoStore));
 ```
 
-2. Create an Android `Application` class in your app module:
-
-```kotlin
-package com.example.myapp
-
-import com.mohitkoley.flutter_app_functions.FlutterAppFunctionsApplication
-
-class MyApplication : FlutterAppFunctionsApplication()
-```
-
-3. Point the host app manifest at it and add AppFunctions descriptions:
+2. Add the AppFunctions descriptions to the host app manifest. There is no
+   Kotlin to write — the plugin declares its own KSP-generated
+   `FlutterAppFunctionsService` and Android binds to it directly:
 
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions">
 
     <application
-        android:name=".MyApplication"
         appfn:description="@string/appfn_description"
         appfn:displayDescription="@string/appfn_display_description">
         ...
@@ -72,7 +63,7 @@ class MyApplication : FlutterAppFunctionsApplication()
 </manifest>
 ```
 
-4. Add the strings in `android/app/src/main/res/values/strings.xml`:
+3. Add the strings in `android/app/src/main/res/values/strings.xml`:
 
 ```xml
 <resources>
@@ -81,13 +72,47 @@ class MyApplication : FlutterAppFunctionsApplication()
 </resources>
 ```
 
+4. Set the toolchain floor that `androidx.appfunctions:1.0.0-alpha10`
+   requires, in `android/app/build.gradle.kts`:
+
+```kotlin
+android {
+    compileSdk = 37
+    compileSdkMinor = 0
+}
+```
+
+   Your project also needs Android Gradle plugin `9.1.0`+ and Gradle
+   `9.3.1`+. Flutter's default `flutter.compileSdkVersion` is still 36, and
+   API 37 ships only as minor-versioned platforms, so both lines above are
+   required — see this example's
+   [`android/app/build.gradle.kts`](android/app/build.gradle.kts) and
+   [`android/settings.gradle.kts`](android/settings.gradle.kts).
+
+> **Upgrading from 0.0.9 or earlier?** Earlier versions needed an
+> `Application` subclass extending `FlutterAppFunctionsApplication`, pointed at
+> by `<application android:name>`. Both are obsolete — delete them. This
+> example no longer contains either.
+
 ## Run
 
 ```sh
 flutter run
 ```
 
-On a supported Android device, verify registration with the Android
-AppFunctions command-line tools described in the Android documentation:
+The AI caller simulation works on any device, including an emulator, because
+it calls the Dart handlers in-process.
+
+Real AppFunctions registration needs **Android 16 (API 36) or newer** — below
+that the plugin's service is disabled, so the app runs normally but nothing can
+discover its functions. On a supported device, verify registration with the
+Android AppFunctions command-line tools described in the Android
+documentation:
 
 https://developer.android.com/ai/appfunctions
+
+Note that having a real agent invoke your app is gated separately: callers need
+the `EXECUTE_APP_FUNCTIONS` permission, and Gemini's AppFunctions integration
+is still a private preview for trusted testers. Exposing the functions works
+today; being called by the system agent in production requires onboarding
+through Google's Early Access Program.
