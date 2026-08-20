@@ -1,3 +1,4 @@
+import 'app_function_definition.dart';
 /// The supported parameter and return-value types for a Flutter
 /// [AppFunctionDefinition]. Mirrors the scalar types supported by
 /// `androidx.appfunctions.AppFunctionData`.

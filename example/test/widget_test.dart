@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_app_functions/flutter_app_functions.dart';
 import 'package:flutter_app_functions_example/main.dart';
+import 'package:flutter_app_functions_example/shop_demo.dart';
 
 void main() {
   testWidgets('simulates an agent tool call that mutates app state', (
@@ -12,11 +13,19 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     FlutterAppFunctions.instance.unregisterAll();
 
+    // The default 800x600 test surface is short enough that the bottom
+    // NavigationBar obscures the prompt button. Give the test room instead of
+    // making it depend on exactly where the button lands.
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     try {
       final store = DemoProductivityStore();
       registerProductivityAppFunctions(store);
 
-      await tester.pumpWidget(MyApp(store: store));
+      await tester.pumpWidget(MyApp(store: store, shopStore: ShopStore()));
 
       expect(find.text('Agent AppFunctions MCP Hub'), findsOneWidget);
       expect(

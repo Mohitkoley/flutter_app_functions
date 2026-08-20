@@ -4,14 +4,32 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_functions/flutter_app_functions.dart';
 
+import 'shop_demo.dart';
+import 'shop_screen.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   final demoStore = DemoProductivityStore();
   registerProductivityAppFunctions(demoStore);
 
-  runApp(MyApp(store: demoStore));
+  // The two demos share the process-wide FlutterAppFunctions registry, so each
+  // one registers its own ids and never calls unregisterAll().
+  final shopStore = ShopStore();
+  attachShopAppFunctions(shopStore);
+
+  runApp(MyApp(store: demoStore, shopStore: shopStore));
 }
+
+/// The ids this demo owns. Both demos share the process-wide
+/// [FlutterAppFunctions] registry, so each panel scopes its view to its own
+/// ids rather than showing everything registered in the process.
+const List<String> kProductivityFunctionIds = [
+  'createTask',
+  'addItemsToShoppingList',
+  'completeTask',
+  'summarizeToday',
+];
 
 void registerProductivityAppFunctions(DemoProductivityStore store) {
   final appFunctions = FlutterAppFunctions.instance;
@@ -118,9 +136,10 @@ void registerProductivityAppFunctions(DemoProductivityStore store) {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.store});
+  const MyApp({super.key, required this.store, required this.shopStore});
 
   final DemoProductivityStore store;
+  final ShopStore shopStore;
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +149,62 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: ProductivityAgentDemo(store: store),
+      home: DemoHome(store: store, shopStore: shopStore),
+    );
+  }
+}
+
+/// Hosts the two demos.
+///
+/// * **Productivity** — one prompt maps to one app function. The simplest
+///   shape, and the one most people picture first.
+/// * **Shop** — one prompt maps to a *chain* of app functions, with ids
+///   flowing from each result into the next call. This is the shape that
+///   matters for anything transactional, and it is why you write small
+///   primitives instead of one big `doCheckout()`.
+class DemoHome extends StatefulWidget {
+  const DemoHome({super.key, required this.store, required this.shopStore});
+
+  final DemoProductivityStore store;
+  final ShopStore shopStore;
+
+  @override
+  State<DemoHome> createState() => _DemoHomeState();
+}
+
+class _DemoHomeState extends State<DemoHome> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _index,
+        children: [
+          ProductivityAgentDemo(store: widget.store),
+          Scaffold(
+            appBar: AppBar(
+              title: const Text('Shop — chained app functions'),
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            ),
+            body: SafeArea(child: ShopScreen(store: widget.shopStore)),
+          ),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.checklist),
+            label: 'Productivity',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.shopping_cart_outlined),
+            label: 'Shop',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -202,7 +276,7 @@ class _ProductivityAgentDemoState extends State<ProductivityAgentDemo> {
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: Center(
-                  child: Text('${FlutterAppFunctions.instance.length} tools'),
+                  child: Text('${_productivityDefinitions().length} tools'),
                 ),
               ),
             ],
@@ -231,8 +305,7 @@ class _ProductivityAgentDemoState extends State<ProductivityAgentDemo> {
                 ),
                 const SizedBox(height: 16),
                 _RegisteredToolsPanel(
-                  definitions: FlutterAppFunctions.instance.definitions
-                      .toList(),
+                  definitions: _productivityDefinitions(),
                 ),
                 const SizedBox(height: 16),
                 _StoreSnapshotPanel(store: widget.store),
@@ -246,6 +319,11 @@ class _ProductivityAgentDemoState extends State<ProductivityAgentDemo> {
     );
   }
 }
+
+List<AppFunctionDefinition> _productivityDefinitions() =>
+    FlutterAppFunctions.instance.definitions
+        .where((d) => kProductivityFunctionIds.contains(d.id))
+        .toList();
 
 class _PromptPanel extends StatelessWidget {
   const _PromptPanel({

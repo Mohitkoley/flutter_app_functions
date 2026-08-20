@@ -1,3 +1,4 @@
+import 'app_function_definition.dart';
 /// The context in which an [AppFunctionDefinition] handler is invoked.
 ///
 /// Mirrors the contract of `androidx.appfunctions.AppFunctionContext` on

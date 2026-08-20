@@ -3,18 +3,64 @@
 This example shows the app-side code you write when your Flutter app wants to
 behave like an on-device MCP tool provider through Android AppFunctions.
 
-The app is a small productivity app. It registers Dart handlers for:
+It contains **two demos**, on separate tabs, because they teach different
+things.
 
-* `createTask`
-* `addItemsToShoppingList`
-* `completeTask`
-* `summarizeToday`
+### 1. Productivity — one prompt, one function
 
-Those functions mutate normal Flutter state in `DemoProductivityStore`. A real
-caller such as Gemini or another permitted Android agent discovers the
-registered AppFunctions through Android and binds the plugin's
-`FlutterAppFunctionsService`, which forwards the call to the same Dart handlers
-shown in [`lib/main.dart`](lib/main.dart).
+Registers `createTask`, `addItemsToShoppingList`, `completeTask` and
+`summarizeToday`. Each prompt maps to a single app function. This is the
+simplest shape and the one most people picture first.
+
+### 2. Shop — one prompt, a *chain* of functions
+
+Registers small e-commerce primitives: `searchProducts`, `addToCart`,
+`viewCart`, `removeFromCart`, `listAddresses`, `setDeliveryAddress`,
+`applyCoupon`, `placeOrder`.
+
+There is deliberately **no** `doCheckout()` mega-function. Ask it:
+
+> Order 2 bags of dark roast coffee and send it to my office
+
+and the agent composes five calls, feeding ids from each result into the next:
+
+```
+searchProducts(query: "coffee")        -> [{productId: sku_coffee_dark, ...}]
+addToCart(productId: sku_coffee_dark, quantity: 2)
+listAddresses()                        -> [{addressId: addr_work, label: Office}]
+setDeliveryAddress(addressId: addr_work)
+placeOrder()                           -> Order ord_1001 placed
+```
+
+Nobody wrote that sequence. It is composed at run time from the intent. That
+is the whole reason to expose many small primitives instead of one big one:
+the agent can also answer "what's in my cart?" with a single `viewCart`, and
+can recover when a step fails.
+
+Two more things the Shop tab demonstrates:
+
+* **Registration is dynamic, not a compile-time list.** `placeOrder` is not
+  registered at all until the cart is non-empty *and* an address is set, and
+  signing out withdraws every mutating function. The "Registered right now"
+  panel updates live — toggle the sign-in switch and watch it change. See
+  `attachShopAppFunctions` in [`lib/shop_demo.dart`](lib/shop_demo.dart).
+* **The agent never spends money unattended.** `placeOrder` shows a real
+  confirmation sheet; declining raises
+  `AppFunctionPermissionRequiredException`, which the agent sees as a typed
+  failure rather than a crash.
+
+The agent loop itself is about twenty lines in
+[`lib/shop_agent.dart`](lib/shop_agent.dart): ask the brain what to call,
+invoke it, feed the result back, repeat. `RuleBasedBrain` keeps the demo
+runnable with no API key; `LlmBrain` in the same file is the seam where a real
+model plugs in — `AppFunctionDefinition.toJson()` already emits the tool-schema
+shape that tool-calling APIs expect, so the loop itself does not change.
+
+Both demos mutate ordinary Flutter state through `ChangeNotifier`, so the UI
+updates the moment the agent changes something. A real caller such as Gemini
+or another permitted Android agent discovers the registered AppFunctions
+through Android and binds the plugin's `FlutterAppFunctionsService`, which
+forwards the call to these same Dart handlers.
 
 ## Important model
 
